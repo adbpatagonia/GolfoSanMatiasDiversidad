@@ -17,11 +17,13 @@ library(gratia)
 ggplot2::theme_set(theme_bw())
 
 # functions -----
-source("R/standardize_x.r")
-source("R/HighstatLibV7.R")
+source(paste0(here::here(), "/R/standardize_x.r"))
+source(paste0(here::here(), "/R/HighstatLibV7.R"))
+
 
 # data -----
-fish.dat <- fread("data-raw/datos_modelos_jcn.csv")
+fish.dat <- fread(paste0(here::here(), "/data-raw/datos_modelos_jcn.csv"))
+
 
 
 # wrangle data ----

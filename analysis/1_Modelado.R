@@ -9,7 +9,8 @@
 
 
 # source data -----
-source("analysis/0_ExplorarDatos.R")
+source(paste0(here::here(), "/analysis/0_ExplorarDatos.R"))
+# source("analysis/0_ExplorarDatos.R")
 
 
 # GAM models -----
