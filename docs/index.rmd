@@ -1,0 +1,55 @@
+---
+title: "Diversidad en el Golfo San Matias"
+author: "Alejandro Buren (CONICET-IAA)"
+# bibliography: leo.bib   ## bibliographic library. Place in same folder as .Rmd
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+# bibliography: GAMS.bib   ## bibliographic library. Place in same folder as .Rmd
+theme: jekyll-theme-slate
+output:
+  html_document:
+    collapsed: no
+    fig_caption: yes
+    highlight: tango
+    number_sections: yes
+    smooth_scroll: yes
+    theme: spacelab
+    toc: yes
+    toc_float: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library('kableExtra')
+library('grid')
+library('plotly')
+library(data.table)
+
+options(scipen = 999)
+options(warn=-1)
+
+source(paste0(here::here(), "/analysis/1_Modelado.R"))
+
+```
+
+Este es un proyecto liderado por .\
+El proyecto fue dirigido por .\
+Guillermo me contacto para ayudar con el analisis de estos datos
+
+
+Los analisis se encuentran en [**este repositorio**](https://github.com/adbpatagonia/GolfoSanMatiasDiversidad).
+
+
+# Preguntas
+
+# Datos
+
+Cincuenta (50) focas muestreadas, 12 hembras y 38 machos.
+
+# Metodos           
+
+# Resultados             
+
+# Conclusiones                  
+
+
+# Referencias
