@@ -1,4 +1,4 @@
-# Diversidad en ek Golfo SanMatias
+# Diversidad en el Golfo SanMatias
 
 Code and data to reproduce analysis of speciess richnes in the San Matias Gulf.
 
