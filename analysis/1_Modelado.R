@@ -196,3 +196,67 @@ ggplot(mod.dat, aes(Year, riqueza)) +
   theme_bw()
 
 # output -----
+
+library(RColorBrewer)
+library(plotly)
+
+### riqueza ~ f(Depth & Year) -----
+new.dat <- expand.grid(Year = seq(2006, 2022, 1),
+                       Depth = seq(32, 176, 2))
+preds <- predict(m.rich_red,
+                 newdata = new.dat,
+                 se.fit = FALSE,
+                 type="response") %>%
+  data.frame() %>%
+  rename(fit = ".") %>%
+  bind_cols(new.dat)
+
+Year_obs <- mod.dat$Year
+Depth_obs <- mod.dat$Depth
+sprich <- mod.dat$riqueza
+
+p.fit.3d.m.rich_red <- plot_ly(preds,
+                               x = ~Year,
+                               y = ~Depth,
+                               z = ~fit ,
+                               intensity = ~fit,
+                               colors = rev(colorRampPalette(brewer.pal(10,"Spectral"))(41)),
+                               type = 'mesh3d',
+                               # type = 'scatter3d',
+                               # mode = 'markers',
+                               # size = 1,
+
+                               opacity = 0.6,
+                               showscale=FALSE,
+                               showlegend = FALSE)  %>%
+  # layout(
+  #   xaxis = list(range = c(2005, 2022)),
+  #   yaxis = list(range = c(30, 185)))
+
+  add_trace(
+    x = ~Year_obs, y = ~Depth_obs, z = ~sprich ,
+    type = 'scatter3d',
+    mode = 'markers',
+    # intensity = ~recruits,
+    marker = list(
+      color = 'rgb(0, 0, 0)',
+      size = 3),
+    opacity = 0.6,
+    # size = 2,
+    # colors = 'black',
+    showlegend = FALSE) %>%
+  layout(title = "",
+         # xaxis = list(range = c(2005, 2022)),
+         # yaxis = list(range = c(30, 185)),
+         scene = list(
+           xaxis = list(title = "Year"),
+           yaxis = list(title = "Depth (m)"),
+           zaxis = list(title = "Species Richness"))) #%>%
+# config(
+#   toImageButtonOptions = list(
+#     format = "svg",
+#     filename = "PinkOdd_SR_Flow",
+#     width = 600,
+#     height = 700
+#   )
+# )
