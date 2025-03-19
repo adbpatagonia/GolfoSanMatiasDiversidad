@@ -64,7 +64,7 @@ logLik(m.rich.full_modG, REML = TRUE)
 # 2.  group-level smoother (year-specific)
 
 m.rich_modGS <- gam(riqueza ~ s(Depth, k = 20, bs = "tp") +
-                      s(Depth, Year_fac, k = 02, bs = "fs", m = 2),
+                      s(Depth, Year_fac, k = 20, bs = "fs", m = 2),
                     data = mod.dat,
                     method = "REML", family = "gaussian")
 
@@ -153,10 +153,59 @@ AIC(
 
 bestmod <- m.rich_modG
 
-# model fit ----
-
+# model fit multiple models ------
 new.dat <- expand.grid(Year_fac = unique(mod.dat$Year_fac),
-                       Depth = seq(min(mod.dat$Depth), max(mod.dat$Depth), 1))# %>%
+                       Depth = seq(min(mod.dat$Depth), max(mod.dat$Depth), 1))
+predictions <- bind_rows(
+  predict(bestmod,
+          newdata = new.dat,
+          se.fit = TRUE,
+          type="response") %>%
+    data.frame() %>%
+    bind_cols(new.dat) %>%
+    mutate(modelo = "G"),
+  predict(m.rich_modGS,
+          newdata = new.dat,
+          se.fit = TRUE,
+          type="response") %>%
+    data.frame() %>%
+    bind_cols(new.dat) %>%
+    mutate(modelo = "GS")) %>%
+  bind_rows(
+    predict(m.rich_modGS,
+            newdata = new.dat,
+            se.fit = TRUE,
+            type="response") %>%
+      data.frame() %>%
+      bind_cols(new.dat) %>%
+      mutate(modelo = "GI"))
+
+p.fit.mods <-
+  ggplot(predictions) +
+  geom_ribbon(aes(x = Depth,
+                  y = fit,
+                  fill = modelo,
+                  ymin = (fit - 2 * se.fit),
+                  ymax = (fit + 2 * se.fit)),
+              alpha = 0.15,
+              color = 'transparent') +
+  # geom_line(data = sample_df, aes(x = Depth, y = riqueza,
+  #                                 group = .draw, color = Year_fac),
+  #           size = 0.3)  +
+  geom_line(aes(x = Depth, y = fit, color = modelo, linetype = modelo), size = 1.3) +
+  geom_point(data = mod.dat,
+             aes(x = Depth, y = riqueza),
+             alpha = 0.4) +
+  facet_grid(.~Year_fac)  +
+  # facet_wrap(.~Year_fac)  +
+  ylab("Species Richness") +
+  theme(legend.position = 'bottom',
+        legend.title = element_blank()) +
+  guides(colour = guide_legend(nrow = 1, byrow = TRUE, title = "Year")) +
+  guides(fill   = guide_legend(nrow = 1, byrow = TRUE, title = "Year"))
+
+
+# model fit G ----
 sample_df <- sample_outcomes(bestmod, newdata = new.dat, 20, unconditional = TRUE)
 conf <- confidence_band(bestmod, newdata = new.dat, unconditional = TRUE)
 
@@ -189,6 +238,8 @@ p.fit.bestmod <- predict(bestmod,
   guides(colour = guide_legend(nrow = 1, byrow = TRUE, title = "Year")) +
   guides(fill   = guide_legend(nrow = 1, byrow = TRUE, title = "Year"))
 
+
+
 parameters::simulate_parameters(bestmod)
 # 2016 > 2018 > 2009 > 2006 > 2022 > 2007
 
@@ -200,3 +251,63 @@ m <- gam(riqueza ~ -1 + s(Depth, k = 20, bs = "tp") +
                    data = mod.dat,
                    method = "REML", family = "gaussian")
 parameters::simulate_parameters(m, centrality = "mean")
+
+# model fit GI -----
+p.fit.modGI <- predict(m.rich_modGI,
+                       newdata = new.dat,
+                       se.fit = TRUE,
+                       type="response") %>%
+  data.frame() %>%
+  bind_cols(new.dat)  %>%
+  ggplot(.) +
+  geom_ribbon(aes(x = Depth,
+                  y = fit,
+                  fill = Year_fac,
+                  ymin = (fit - 2 * se.fit),
+                  ymax = (fit + 2 * se.fit)),
+              alpha = 0.15,
+              color = 'transparent') +
+  # geom_line(data = sample_df, aes(x = Depth, y = riqueza,
+  #                                 group = .draw, color = Year_fac),
+  #           size = 0.3)  +
+  geom_line(aes(x = Depth, y = fit, color = Year_fac), size = 1.3) +
+  geom_point(data = mod.dat,
+             aes(x = Depth, y = riqueza, color = Year_fac),
+             alpha = 0.4) +
+  facet_grid(.~Year_fac)  +
+  # facet_wrap(.~Year_fac)  +
+  ylab("Species Richness") +
+  theme(legend.position = 'bottom',
+        legend.title = element_blank()) +
+  guides(colour = guide_legend(nrow = 1, byrow = TRUE, title = "Year")) +
+  guides(fill   = guide_legend(nrow = 1, byrow = TRUE, title = "Year"))
+
+# model fit GS -----
+p.fit.modGS <- predict(m.rich_modGS,
+                       newdata = new.dat,
+                       se.fit = TRUE,
+                       type="response") %>%
+  data.frame() %>%
+  bind_cols(new.dat)  %>%
+  ggplot(.) +
+  geom_ribbon(aes(x = Depth,
+                  y = fit,
+                  fill = Year_fac,
+                  ymin = (fit - 2 * se.fit),
+                  ymax = (fit + 2 * se.fit)),
+              alpha = 0.15,
+              color = 'transparent') +
+  # geom_line(data = sample_df, aes(x = Depth, y = riqueza,
+  #                                 group = .draw, color = Year_fac),
+  #           size = 0.3)  +
+  geom_line(aes(x = Depth, y = fit, color = Year_fac), size = 1.3) +
+  geom_point(data = mod.dat,
+             aes(x = Depth, y = riqueza, color = Year_fac),
+             alpha = 0.4) +
+  facet_grid(.~Year_fac)  +
+  # facet_wrap(.~Year_fac)  +
+  ylab("Species Richness") +
+  theme(legend.position = 'bottom',
+        legend.title = element_blank()) +
+  guides(colour = guide_legend(nrow = 1, byrow = TRUE, title = "Year")) +
+  guides(fill   = guide_legend(nrow = 1, byrow = TRUE, title = "Year"))
