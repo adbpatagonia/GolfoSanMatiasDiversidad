@@ -399,6 +399,10 @@ Ajuste del modelo mas parsimonioso
 p.fit.bestmod +  xlab("Depth (m)")
 ```
 
+```{r bestmodelfitplotly, fig.width  = 9, fig.height = 5,  echo=FALSE, message=FALSE, warning=FALSE}
+ggplotly(p.fit.bestmod )
+```
+
 Particion de deviance explicada por el mejor modelo:
 
 -   Profundidad: 67.5%\

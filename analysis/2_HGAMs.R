@@ -228,7 +228,9 @@ p.fit.bestmod <- predict(bestmod,
   #           size = 0.3)  +
   geom_line(aes(x = Depth, y = fit, color = Year_fac), size = 1.3) +
   geom_point(data = mod.dat,
-             aes(x = Depth, y = riqueza, color = Year_fac),
+             aes(x = Depth, y = riqueza,
+                 color = Year_fac,
+                 label = area_barrida   ),
              alpha = 0.4) +
   facet_grid(.~Year_fac)  +
   # facet_wrap(.~Year_fac)  +
