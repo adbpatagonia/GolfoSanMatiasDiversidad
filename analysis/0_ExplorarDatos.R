@@ -22,7 +22,7 @@ source(paste0(here::here(), "/R/HighstatLibV7.R"))
 
 
 # data -----
-fish.dat <- fread(paste0(here::here(), "/data-raw/datos_modelos_jcn.csv"))
+fish.dat <- fread(paste0(here::here(), "/data-raw/datos_modelos_corregido.csv"))
 
 
 
