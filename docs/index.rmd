@@ -54,6 +54,20 @@ Los datos fueron tomados a lo largo de 6 campañas entre 2006 y 2022. La campañ
 
 Este es una primera aproximacion al problema. Naturalmente, este es un proceso interactivo: todos los analisis pueden ser modificados.
 
+# Area de estudio     
+
+Mapa del area de estudio    
+
+
+Bathymetry data from https://www.ncei.noaa.gov/maps/bathymetry/  
+DEM Global Mosaic
+3 arc-seconds (90m)
+
+```{r map, fig.width  = 9, fig.height = 9, echo=FALSE, message=FALSE, warning=FALSE}
+p.map
+```
+
+
 # Datos
 
 Numero de lances por año
