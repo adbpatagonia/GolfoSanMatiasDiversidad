@@ -21,6 +21,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library('kableExtra')
 library(gam.hp)
 library(parameters)
+library(GGally)
 # library('grid')
 # library('plotly')
 # library(data.table)
@@ -198,17 +199,13 @@ Hay correlacion entre:
 -   Año y tiempo de arrastre (`pearson r =` `r round(cor(mod.dat[,(Year)], mod.dat[,(tiempo_arrastre2)]), 2)`): *Idem* area barrida.
 
 ```{r plot.correlations, fig.width  = 10, fig.height = 6, echo=FALSE, message=FALSE, warning=FALSE}
-ggpairs(mod.dat[,.( Year, area_barrida, tiempo_arrastre2 , Depth, long)],
-        lower = list(continuous = wrap("points", alpha = 0.4), combo = "facethist", discrete = "facetbar", na =
-                       "na"))
+p.corr.mod.dat 
 ```
 
 Este es el mismo grafico sin incluir longitud o tiempo de arrastre
 
 ```{r plot.correlations2, fig.width  = 10, fig.height = 6, echo=FALSE, message=FALSE, warning=FALSE}
-ggpairs(mod.dat[,.( Year, area_barrida, Depth)],
-        lower = list(continuous = wrap("points", alpha = 0.4), combo = "facethist", discrete = "facetbar", na =
-                       "na"))
+p.corr.mod.rest
 ```
 
 Esta tabla muestra la multicolinearidad (@zuur_etal_2010) entre las variables retenidas. Todas son \< 2, por lo que podemos incluirlas sin inconvenientes en los modelos.
