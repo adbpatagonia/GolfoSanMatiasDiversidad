@@ -12,6 +12,11 @@ library(tidyverse)
 library(janitor)
 library(GGally)
 library(mgcv)
+library(sf)
+library(raster)
+library(tidyterra)
+library(terra)
+library(rnaturalearth)
 library(gratia)
 
 ggplot2::theme_set(theme_bw())
@@ -89,7 +94,9 @@ mod.dat <- fish.dat[,.(riqueza, Year, area_barrida, tiempo_arrastre2 , Depth, lo
 # 2. Depthundidad y longitud (r = 0.422). Podemos usar solo una - desde un punto de vista biologico, creo que Depthundidad debe ser mejor variable para explicar la cantidad de spp
 # 3. Año y area barrida: esto esta dado porque en 2022 se muestreo de manera diferente....
 # 4. Año y tiempo de arrastre: esto esta dado porque en 2022 se muestreo de manera diferente....
+p.corr.mod.dat <-
 ggpairs(mod.dat[,.( Year, area_barrida, tiempo_arrastre2 , Depth, long)])
+p.corr.mod.rest <-
 ggpairs(mod.dat[,.( Year, area_barrida, Depth)])
 
 # multicollinearity
@@ -97,3 +104,57 @@ corvif(mod.dat[,.( Year, area_barrida, tiempo_arrastre2 , Depth, long)])
 multico <- corvif(mod.dat[,.( Year, area_barrida,  Depth)])
 
 
+# map ----
+# plotting bathymetry - took code from
+# https://heima.hafro.is/~einarhj/groftp/maps.html
+
+bg  <-  ne_countries(scale = 10,
+                     country = "Argentina",
+                     type = "countries",
+                     continent = NULL,
+                     returnclass = "sf")
+
+bathy <- rast(paste0(here::here(), "/data/bathy_DEM_90.img"))
+
+bb <- st_bbox(c(xmin = -66, xmax = -63,
+                ymin = -43, ymax = -40))
+z <- raster::crop(bathy, bb)
+
+# values above sealevel set to NA
+i <- values(z) > 0
+values(z)[i] <- NA
+
+bathy <- as.data.frame(z, xy = TRUE) %>%
+  gather(-x, -y, key = "var", value = "value", factor_key = TRUE)
+
+p.map <-
+  ggplot() +
+  # theme_void() +
+  # geom_spatraster(data = hill, show.legend = FALSE) +
+  # Note the scale, grey colours
+  # scale_fill_gradientn(colours = grey(0:100 / 100), na.value = NA) +
+  # ggnewscale::new_scale_fill() +
+  # geom_spatraster(data = z, alpha = 0.5, show.legend = TRUE) +
+  # geom_spatraster_contour(data = z, colour = "gray", linewidth = 0.4,
+  #                         linetype = 2,
+  #                         breaks = seq(0, -200, -10)) +
+  geom_raster(data = bathy, aes(x = x, y = y, fill = value),
+              interpolate = TRUE) +
+  geom_contour(data = bathy, aes(x = x, y = y, z = value),
+               breaks=  seq(0, -200, -10),
+               linetype=3, colour="gray50") +
+  geom_sf(data = bg, fill = "gray70") +
+  coord_sf(xlim = c(-65.5,-63.8),
+           ylim = c(-42.3, -40.5)) +
+  geom_point(data = fish.dat, aes(x = long, y = lat, color = as.factor(Year)),
+             alpha = 0.8) +
+  labs(x = "Longitude", y = "Latitude") +
+  theme(legend.position = "bottom",
+        legend.title = element_blank()) +
+  guides(colour = guide_legend(nrow = 1, byrow = TRUE, title = ""))
+
+
+# output -----
+
+# ggsave(filename = "output/map.png",
+#        plot = p.map, height = 8, width = 8)
