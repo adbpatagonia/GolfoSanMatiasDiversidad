@@ -124,8 +124,8 @@ bb <- st_bbox(c(xmin = -66, xmax = -63,
 z <- raster::crop(bathy, bb)
 
 # values above sealevel set to NA
-i <- values(z) > 5
-values(z)[i] <- NA
+i <- values(z) > 20
+values(z)[i] <- 0
 
 bathy <- as.data.frame(z, xy = TRUE) %>%
   gather(-x, -y, key = "var", value = "value", factor_key = TRUE)
@@ -144,7 +144,7 @@ p.map <-
   geom_raster(data = bathy, aes(x = x, y = y, fill = value),
               interpolate = TRUE) +
   geom_contour(data = bathy, aes(x = x, y = y, z = value),
-               breaks = seq(1, -200, -10),
+               breaks = seq(0, -200, -10),
                linetype = 3, colour = "gray50") +
   geom_sf(data = bg, fill = "gray70") +
   coord_sf(xlim = c(-65.5,-63.8),
