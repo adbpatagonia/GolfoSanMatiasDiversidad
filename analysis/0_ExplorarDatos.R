@@ -24,6 +24,7 @@ ggplot2::theme_set(theme_bw())
 # functions -----
 source(paste0(here::here(), "/R/standardize_x.r"))
 source(paste0(here::here(), "/R/HighstatLibV7.R"))
+source(paste0(here::here(), "/R/lat-lon-labels.R"))
 
 
 # data -----
@@ -108,20 +109,22 @@ multico <- corvif(mod.dat[,.( Year, area_barrida,  Depth)])
 # plotting bathymetry - took code from
 # https://heima.hafro.is/~einarhj/groftp/maps.html
 
+
 bg  <-  ne_countries(scale = 10,
                      country = "Argentina",
                      type = "countries",
                      continent = NULL,
                      returnclass = "sf")
 
-bathy <- rast(paste0(here::here(), "/data/bathy_DEM_90.img"))
 
+bathy <- rast(paste0(here::here(), "/data/bathy_DEM_90.img"))
 bb <- st_bbox(c(xmin = -66, xmax = -63,
                 ymin = -43, ymax = -40))
+
 z <- raster::crop(bathy, bb)
 
 # values above sealevel set to NA
-i <- values(z) > 0
+i <- values(z) > 5
 values(z)[i] <- NA
 
 bathy <- as.data.frame(z, xy = TRUE) %>%
@@ -141,11 +144,13 @@ p.map <-
   geom_raster(data = bathy, aes(x = x, y = y, fill = value),
               interpolate = TRUE) +
   geom_contour(data = bathy, aes(x = x, y = y, z = value),
-               breaks=  seq(0, -200, -10),
-               linetype=3, colour="gray50") +
+               breaks = seq(1, -200, -10),
+               linetype = 3, colour = "gray50") +
   geom_sf(data = bg, fill = "gray70") +
   coord_sf(xlim = c(-65.5,-63.8),
-           ylim = c(-42.3, -40.5)) +
+           ylim = c(-42.3, -40.5),
+           expand = TRUE,
+           crs = st_crs(bg)) +
   geom_point(data = fish.dat, aes(x = long, y = lat, color = as.factor(Year)),
              alpha = 0.8) +
   labs(x = "Longitude", y = "Latitude") +
@@ -157,4 +162,4 @@ p.map <-
 # output -----
 
 # ggsave(filename = "output/map.png",
-#        plot = p.map, height = 8, width = 8)
+#        plot = p.map, height = 8, width = 10)
