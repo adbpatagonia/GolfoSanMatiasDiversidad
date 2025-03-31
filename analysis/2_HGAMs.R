@@ -1,6 +1,7 @@
 
 
 library('ungeviz')
+library(gam.hp)
 
 # source data -----
 source(paste0(here::here(), "/analysis/1_Modelado.R"))
@@ -245,8 +246,10 @@ p.fit.bestmod <- predict(bestmod,
 parameters::simulate_parameters(bestmod)
 # 2016 > 2018 > 2009 > 2006 > 2022 > 2007
 
+p.var.part <- plot.gamhp(gam.hp(bestmod), plot.perc = TRUE)
 
-
+p.var.part$data[which(grepl(x = p.var.part$data$variable, pattern = "Depth")), "value"]
+p.var.part$data[which(grepl(x = p.var.part$data$variable, pattern = "Year")), "value"]
 
 m <- gam(riqueza ~ -1 + s(Depth, k = 20, bs = "tp") +
                      s(Year_fac, k = length(levels(mod.dat$Year_fac)), bs = "re"),
