@@ -30,8 +30,6 @@ source(paste0(here::here(), "/R/lat-lon-labels.R"))
 # data -----
 fish.dat <- fread(paste0(here::here(), "/data-raw/datos_modelos_corregido.csv"))
 
-
-
 # wrangle data ----
 ## drop first colmn ----
 fish.dat[,V1 := NULL]
@@ -41,6 +39,10 @@ fish.dat <- janitor::clean_names(fish.dat)
 fish.dat <- fish.dat %>%
   rename(Year = ano,
          Depth = prof)
+
+## Profundidad 2007 ------
+# la profundidad en 2007 fue tomada en brazas - corregir a metros
+fish.dat[Year == 2007, Depth := 1.6718 * Depth]
 
 # explore data -----
 ggplot(fish.dat[Year < 2022]) +
@@ -157,6 +159,8 @@ p.map <-
   theme(legend.position = "bottom",
         legend.title = element_blank()) +
   guides(colour = guide_legend(nrow = 1, byrow = TRUE, title = ""))
+
+
 
 
 # output -----
