@@ -32,13 +32,15 @@ fish.dat <- fread(paste0(here::here(), "/data-raw/datos_modelos_corregido.csv"))
 
 # wrangle data ----
 ## drop first colmn ----
-fish.dat[,V1 := NULL]
+fish.dat[, V1 := NULL]
 ## column names ----
 fish.dat <- janitor::clean_names(fish.dat)
 
 fish.dat <- fish.dat %>%
-  rename(Year = ano,
-         Depth = prof)
+  rename(
+    Year = ano,
+    Depth = prof
+  )
 
 ## Profundidad 2007 ------
 # la profundidad en 2007 fue tomada en brazas - corregir a metros
@@ -49,10 +51,10 @@ ggplot(fish.dat[Year < 2022]) +
   geom_histogram(aes(x = tiempo_arrastre2))
 
 ggplot(fish.dat[Year < 2022]) +
-  geom_histogram(aes(x = area_barrida ))
+  geom_histogram(aes(x = area_barrida))
 
 ggplot(fish.dat[Year == 2022]) +
-  geom_histogram(aes(x = area_barrida ))
+  geom_histogram(aes(x = area_barrida))
 
 
 ggplot(fish.dat) +
@@ -68,17 +70,17 @@ ggplot(fish.dat) +
   geom_point(aes(y = riqueza, x = tiempo_arrastre2))
 
 ggplot(fish.dat) +
-  geom_point(aes(y = riqueza, x = area_barrida ))
+  geom_point(aes(y = riqueza, x = area_barrida))
 
 ggplot(fish.dat) +
-  geom_point(aes(y = riqueza, x = area_barrida )) +
+  geom_point(aes(y = riqueza, x = area_barrida)) +
   geom_smooth(aes(y = riqueza, x = area_barrida)) +
-  facet_wrap(.~Year)
+  facet_wrap(. ~ Year)
 
 ggplot(fish.dat) +
-  geom_point(aes(y = riqueza, x = tiempo_arrastre2 )) +
+  geom_point(aes(y = riqueza, x = tiempo_arrastre2)) +
   geom_smooth(aes(y = riqueza, x = tiempo_arrastre2)) +
-  facet_wrap(.~Year)
+  facet_wrap(. ~ Year)
 
 
 ggplot(fish.dat) +
@@ -90,21 +92,21 @@ ggplot(fish.dat) +
 
 ## assess correlation among explanatory vars ----
 
-mod.dat <- fish.dat[,.(riqueza, Year, area_barrida, tiempo_arrastre2 , Depth, long)]
+mod.dat <- fish.dat[, .(riqueza, Year, area_barrida, tiempo_arrastre2, Depth, long)]
 
-#correlation between:
+# correlation between:
 # 1. area_barrida y tiempo de arrastre (r = 0.692). Podemos usar solo una - desde un punto de vista logico, creo que area_barrida debe ser mejor variable para explicar la cantidad de spp
 # 2. Depthundidad y longitud (r = 0.422). Podemos usar solo una - desde un punto de vista biologico, creo que Depthundidad debe ser mejor variable para explicar la cantidad de spp
 # 3. Año y area barrida: esto esta dado porque en 2022 se muestreo de manera diferente....
 # 4. Año y tiempo de arrastre: esto esta dado porque en 2022 se muestreo de manera diferente....
 p.corr.mod.dat <-
-ggpairs(mod.dat[,.( Year, area_barrida, tiempo_arrastre2 , Depth, long)])
+  ggpairs(mod.dat[, .(Year, area_barrida, tiempo_arrastre2, Depth, long)])
 p.corr.mod.rest <-
-ggpairs(mod.dat[,.( Year, area_barrida, Depth)])
+  ggpairs(mod.dat[, .(Year, area_barrida, Depth)])
 
 # multicollinearity
-corvif(mod.dat[,.( Year, area_barrida, tiempo_arrastre2 , Depth, long)])
-multico <- corvif(mod.dat[,.( Year, area_barrida,  Depth)])
+corvif(mod.dat[, .(Year, area_barrida, tiempo_arrastre2, Depth, long)])
+multico <- corvif(mod.dat[, .(Year, area_barrida, Depth)])
 
 
 # map ----
@@ -112,16 +114,20 @@ multico <- corvif(mod.dat[,.( Year, area_barrida,  Depth)])
 # https://heima.hafro.is/~einarhj/groftp/maps.html
 
 
-bg  <-  ne_countries(scale = 10,
-                     country = "Argentina",
-                     type = "countries",
-                     continent = NULL,
-                     returnclass = "sf")
+bg <- ne_countries(
+  scale = 10,
+  country = "Argentina",
+  type = "countries",
+  continent = NULL,
+  returnclass = "sf"
+)
 
 
 bathy <- rast(paste0(here::here(), "/data/bathy_DEM_90.img"))
-bb <- st_bbox(c(xmin = -66, xmax = -63,
-                ymin = -43, ymax = -40))
+bb <- st_bbox(c(
+  xmin = -66, xmax = -63,
+  ymin = -43, ymax = -40
+))
 
 z <- raster::crop(bathy, bb)
 
@@ -143,21 +149,31 @@ p.map <-
   # geom_spatraster_contour(data = z, colour = "gray", linewidth = 0.4,
   #                         linetype = 2,
   #                         breaks = seq(0, -200, -10)) +
-  geom_raster(data = bathy, aes(x = x, y = y, fill = value),
-              interpolate = TRUE) +
-  geom_contour(data = bathy, aes(x = x, y = y, z = value),
-               breaks = seq(0, -200, -10),
-               linetype = 3, colour = "gray50") +
+  geom_raster(
+    data = bathy, aes(x = x, y = y, fill = value),
+    interpolate = TRUE
+  ) +
+  geom_contour(
+    data = bathy, aes(x = x, y = y, z = value),
+    breaks = seq(0, -200, -10),
+    linetype = 3, colour = "gray50"
+  ) +
   geom_sf(data = bg, fill = "gray70") +
-  coord_sf(xlim = c(-65.5,-63.8),
-           ylim = c(-42.3, -40.5),
-           expand = TRUE,
-           crs = st_crs(bg)) +
-  geom_point(data = fish.dat, aes(x = long, y = lat, color = as.factor(Year)),
-             alpha = 0.8) +
+  coord_sf(
+    xlim = c(-65.5, -63.8),
+    ylim = c(-42.3, -40.5),
+    expand = TRUE,
+    crs = st_crs(bg)
+  ) +
+  geom_point(
+    data = fish.dat, aes(x = long, y = lat, color = as.factor(Year)),
+    alpha = 0.8
+  ) +
   labs(x = "Longitude", y = "Latitude") +
-  theme(legend.position = "bottom",
-        legend.title = element_blank()) +
+  theme(
+    legend.position = "bottom",
+    legend.title = element_blank()
+  ) +
   guides(colour = guide_legend(nrow = 1, byrow = TRUE, title = ""))
 
 
