@@ -1,5 +1,17 @@
+# ADB
+# 2025-04-21
+# plot fits of best model in previous step
+# it includes the effects of depth, longitude, tiempo de arrastre, and interaction
+# between longitude and tiempo de arrastre
+# i.e. it is a 4D plot: 3 explanatory vars, and 1 dependent var: species richness
+# try 2 different visualizations:
+# always plot depth in the y-axis, and richness in the z-axis
+# plot either time in the x-axis and longitude as different planes OR
+# longitude in the x-axis and time as different planes OR
 
+# source modelling -----
 source(paste0(here::here(), "/analysis/1_Modelado.R"))
+# libraries -----
 library(geometry)
 library(plotly)
 library(RColorBrewer)
@@ -117,7 +129,7 @@ p.fit.4d.long <- p
 # 4th var: tiempo de arrastre ----
 # Split the data by group
 groups <- unique(preds$tiempo_arrastre2)
-groups <- c(15, 30, 45)
+groups <- c(20, 30, 40)
 
 
 # Base plot
@@ -198,3 +210,26 @@ p <- layout(
 )
 
 p.fit.4d.time <- p
+
+
+# extra stuff ----
+# https://github.com/wilkelab/ungeviz
+library("ungeviz")
+nd <- expand.grid(
+  tiempo_arrastre2 = 30,
+  long =  -64.4,
+  Year_fac = 2009,
+  Depth = seq(32, 176, 2)
+)
+sample_df <- sample_outcomes(m.3, newdata = nd, 30, unconditional = TRUE)
+conf <- confidence_band(m.3, newdata = nd, unconditional = TRUE)
+ggplot(mod.dat, aes(Depth, riqueza)) +
+  # facet_grid(. ~ long) +
+  # geom_ribbon(data = conf, aes(ymin = lo, ymax = hi), fill = "#80808040", color = NA) +
+  geom_point(
+    alpha = 0.4,
+    position = position_dodge2(width = wd)
+  ) +
+  geom_line(data = sample_df, aes(group = .draw), color = "#0072B2", size = 0.3) +
+  geom_line(data = conf, size = 1, color = "darkred") +
+  theme_bw()
