@@ -59,7 +59,7 @@ m.2 <- gam(
     s(long) +
     s(tiempo_arrastre2) +
     s(Year_fac, k = length(levels(mod.dat$Year_fac)), bs = "re") +
-    ti(Depth, long, tiempo_arrastre2) ,
+    ti(Depth, long, tiempo_arrastre2),
   method = "ML",
   data = mod.dat
 )
@@ -82,7 +82,7 @@ m.3 <- gam(
     s(tiempo_arrastre2) +
     s(long) +
     s(Year_fac, k = length(levels(mod.dat$Year_fac)), bs = "re") +
-    ti( tiempo_arrastre2, long) ,
+    ti(tiempo_arrastre2, long),
   method = "ML",
   data = mod.dat
 )
@@ -106,7 +106,7 @@ m.4 <- gam(
     s(long) +
     s(tiempo_arrastre2) +
     s(Year_fac, k = length(levels(mod.dat$Year_fac)), bs = "re") +
-    ti(tiempo_arrastre2, Depth) ,
+    ti(tiempo_arrastre2, Depth),
   method = "ML",
   data = mod.dat
 )
@@ -128,10 +128,10 @@ summary(mod)
 ms <- AIC(m.1, m.2, m.3, m.4) %>%
   data.table(keep.rownames = TRUE) %>%
   mutate(LL = c(
-    logLik(m.1),logLik(m.2),logLik(m.3),logLik(m.4)
+    logLik(m.1), logLik(m.2), logLik(m.3), logLik(m.4)
   )) %>%
   mutate(dev = c(
-    deviance(m.1),deviance(m.2),deviance(m.3),deviance(m.4)
+    deviance(m.1), deviance(m.2), deviance(m.3), deviance(m.4)
   )) %>%
   mutate(deltaAIC = AIC - min(AIC))
 # Round numeric columns to 2 decimal places
@@ -141,8 +141,9 @@ ms$rsq <- c(
   summary(m.1)$r.sq,
   summary(m.2)$r.sq,
   summary(m.3)$r.sq,
-  summary(m.4)$r.sq)
-ms <- ms[, lapply(.SD, function(x) if(is.numeric(x)) round(x, 2) else x)]
+  summary(m.4)$r.sq
+)
+ms <- ms[, lapply(.SD, function(x) if (is.numeric(x)) round(x, 2) else x)]
 ms$model <- c(
   "Main effects",
   "Main effects + triple interaction",
@@ -150,7 +151,7 @@ ms$model <- c(
   "Main effects + double interaction (depth, tiempo)"
 )
 
-ms <- ms[order(AIC),.(model, df, LL, dev, rsq, deltaAIC, er)]
+ms <- ms[order(AIC), .(model, df, LL, dev, rsq, deltaAIC, er)]
 
 # Visualizze flexibility of each smooth term
 # Extract EDF for each term in the model
@@ -161,8 +162,10 @@ ggplot(edf_data, aes(x = reorder(.smooth, .edf), y = .edf)) +
   geom_col(fill = "steelblue") +
   coord_flip() +
   theme_minimal(base_size = 14) +
-  labs(title = "Effective Degrees of Freedom per Smooth Term",
-       x = "Smooth Term", y = "Effective Degrees of Freedom (EDF)")
+  labs(
+    title = "Effective Degrees of Freedom per Smooth Term",
+    x = "Smooth Term", y = "Effective Degrees of Freedom (EDF)"
+  )
 
 
 

@@ -23,7 +23,7 @@ library(gam.hp)
 library(parameters)
 library(GGally)
 # library('grid')
-library('plotly')
+library("plotly")
 library(data.table)
 
 options(scipen = 999)
@@ -192,10 +192,10 @@ No veo relacion clara entre riqueza y area barrida o tiempo de arrastre. Lo unic
 
 ```{r plot.datos7, fig.width  = 8, fig.height = 3, echo=FALSE, message=FALSE, warning=FALSE}
 ggplotly(ggplot(mod.dat) +
-           geom_point(aes(y = riqueza, x = area_barrida, label = Year, color = Year_fac), alpha = 0.4))
+  geom_point(aes(y = riqueza, x = area_barrida, label = Year, color = Year_fac), alpha = 0.4))
 
 ggplotly(ggplot(mod.dat) +
-           geom_point(aes(y = riqueza, x = tiempo_arrastre2, label = Year, color = Year_fac), alpha = 0.4))
+  geom_point(aes(y = riqueza, x = tiempo_arrastre2, label = Year, color = Year_fac), alpha = 0.4))
 
 
 
@@ -330,7 +330,7 @@ Esta tabla tiene:
 kable(ms) %>%
   kable_styling(
     bootstrap_options = c("striped", "hover"),
-    position =  "center",
+    position = "center",
     row_label_position = "left",
     full_width = FALSE
   )
@@ -367,12 +367,12 @@ Más allá de que el efecto de año no es estadísticamante significativo, lo ma
 ```{r partialeffects, echo=FALSE, message=FALSE, warning=FALSE}
 draw(m.3) +
   theme_minimal() +
-  scale_fill_viridis_c() 
+  scale_fill_viridis_c()
 ```
 
 
 ```{r summary.m.3, echo=FALSE, message=FALSE, warning=FALSE}
-summary(m.3)  
+summary(m.3)
 ```
 
 
@@ -413,7 +413,7 @@ El efecto de la interacción entre tiempo de arrastre y longitud se ve al girar 
 
 
 ```{r mfit.time, fig.width  = 8, fig.height = 8, echo=FALSE, message=FALSE, warning=FALSE}
-p.fit.4d.time 
+p.fit.4d.time
 ```
 
 
@@ -427,7 +427,7 @@ Aquí es notable por qué en los lances hechos mas al este (longitud -64.8) el e
 También es claro que el efecto de tiempo de arrastre es positivo: con tiempos de arrastre de 15 minutos la riqueza es baja, y aumenta con tiempo de arraste de 30 minutos.   
   
 ```{r mfit.long, fig.width  = 8, fig.height = 8, echo=FALSE, message=FALSE, warning=FALSE}
-p.fit.4d.long 
+p.fit.4d.long
 ```
 
 

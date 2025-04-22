@@ -81,9 +81,9 @@ new.dat <- expand.grid(
 )
 
 p.fit.Year <- predict(m.rich_red,
-                      newdata = new.dat,
-                      se.fit = TRUE,
-                      type = "response"
+  newdata = new.dat,
+  se.fit = TRUE,
+  type = "response"
 ) %>%
   data.frame() %>%
   bind_cols(new.dat) %>%
@@ -115,9 +115,9 @@ new.dat <- expand.grid(
 )
 
 p.fit.Depth <- predict(m.rich_red,
-                       newdata = new.dat,
-                       se.fit = TRUE,
-                       type = "response"
+  newdata = new.dat,
+  se.fit = TRUE,
+  type = "response"
 ) %>%
   data.frame() %>%
   bind_cols(new.dat) %>%
@@ -148,9 +148,9 @@ new.dat <- expand.grid(
   Depth_bin = cut(mod.dat$Depth, 5)
 ) %>%
   merge(mod.dat %>%
-          mutate(Depth_bin = cut(Depth, 5)) %>%
-          group_by(Depth_bin) %>%
-          reframe(Depth = mean(Depth))) %>%
+    mutate(Depth_bin = cut(Depth, 5)) %>%
+    group_by(Depth_bin) %>%
+    reframe(Depth = mean(Depth))) %>%
   unique() %>%
   arrange(Year, Depth)
 mod.dat <- mod.dat %>%
@@ -158,9 +158,9 @@ mod.dat <- mod.dat %>%
 
 
 p.fit.Year_Depth <- predict(m.rich_red,
-                            newdata = new.dat,
-                            se.fit = TRUE,
-                            type = "response"
+  newdata = new.dat,
+  se.fit = TRUE,
+  type = "response"
 ) %>%
   data.frame() %>%
   bind_cols(new.dat) %>%
@@ -193,9 +193,9 @@ new.dat <- expand.grid(
 )
 
 p.fit.Depth_Year <- predict(m.rich_red,
-                            newdata = new.dat,
-                            se.fit = TRUE,
-                            type = "response"
+  newdata = new.dat,
+  se.fit = TRUE,
+  type = "response"
 ) %>%
   data.frame() %>%
   bind_cols(new.dat) %>%
@@ -247,9 +247,9 @@ new.dat <- expand.grid(
   Depth = seq(32, 176, 2)
 )
 preds <- predict(m.rich_red,
-                 newdata = new.dat,
-                 se.fit = FALSE,
-                 type = "response"
+  newdata = new.dat,
+  se.fit = FALSE,
+  type = "response"
 ) %>%
   data.frame() %>%
   rename(fit = ".") %>%
@@ -260,19 +260,19 @@ Depth_obs <- mod.dat$Depth
 sprich <- mod.dat$riqueza
 
 p.fit.3d.m.rich_red <- plot_ly(preds,
-                               x = ~Year,
-                               y = ~Depth,
-                               z = ~fit,
-                               intensity = ~fit,
-                               colors = rev(colorRampPalette(brewer.pal(10, "Spectral"))(41)),
-                               type = "mesh3d",
-                               # type = 'scatter3d',
-                               # mode = 'markers',
-                               # size = 1,
+  x = ~Year,
+  y = ~Depth,
+  z = ~fit,
+  intensity = ~fit,
+  colors = rev(colorRampPalette(brewer.pal(10, "Spectral"))(41)),
+  type = "mesh3d",
+  # type = 'scatter3d',
+  # mode = 'markers',
+  # size = 1,
 
-                               opacity = 0.6,
-                               showscale = FALSE,
-                               showlegend = FALSE
+  opacity = 0.6,
+  showscale = FALSE,
+  showlegend = FALSE
 ) %>%
   # layout(
   #   xaxis = list(range = c(2005, 2022)),

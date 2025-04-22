@@ -27,10 +27,10 @@ new.dat <- expand.grid(
   Depth = seq(32, 176, 2)
 )
 preds <- predict(m.3,
-                 newdata = new.dat,
-                 se.fit = FALSE,
-                 exclude = "s(Year_fac)",
-                 type = "response"
+  newdata = new.dat,
+  se.fit = FALSE,
+  exclude = "s(Year_fac)",
+  type = "response"
 ) %>%
   data.frame() %>%
   rename(fit = ".") %>%
@@ -56,15 +56,17 @@ for (g in groups) {
 
   # Triangulate the surface
   triangles <- delaunayn(data_g[, c("tiempo_arrastre2", "Depth")])
-  i <- triangles[,1] - 1
-  j <- triangles[,2] - 1
-  k <- triangles[,3] - 1
+  i <- triangles[, 1] - 1
+  j <- triangles[, 2] - 1
+  k <- triangles[, 3] - 1
 
 
-  hover_text <- paste0("Longitude: ", g , "<br>",
-                       "Tiempo: ", data_g$tiempo_arrastre2, "<br>",
-                       "Depth: ", data_g$Depth, "<br>",
-                       "Species Richness: ", round(data_g$fit, 2))
+  hover_text <- paste0(
+    "Longitude: ", g, "<br>",
+    "Tiempo: ", data_g$tiempo_arrastre2, "<br>",
+    "Depth: ", data_g$Depth, "<br>",
+    "Species Richness: ", round(data_g$fit, 2)
+  )
 
   # Add mesh trace (with legend turned off)
   p <- add_trace(
@@ -80,18 +82,19 @@ for (g in groups) {
     opacity = 0.6,
     colors = rev(colorRampPalette(brewer.pal(10, "Spectral"))(41)),
     name = paste("Group", g),
-    showlegend = FALSE,   # This hides the mesh from the legend
+    showlegend = FALSE, # This hides the mesh from the legend
     flatshading = TRUE,
     showscale = FALSE
   )
-
 }
 
 # Add the shared marker trace with legend
-ht <- paste0( "Longitude_obs: ", mod.dat$long , "<br>",
-              "Tiempo_obs: ", mod.dat$tiempo_arrastre2, "<br>",
-              "Depth_obs: ", mod.dat$Depth, "<br>",
-              "Species Richness_obs: ", round(mod.dat$riqueza, 2))
+ht <- paste0(
+  "Longitude_obs: ", mod.dat$long, "<br>",
+  "Tiempo_obs: ", mod.dat$tiempo_arrastre2, "<br>",
+  "Depth_obs: ", mod.dat$Depth, "<br>",
+  "Species Richness_obs: ", round(mod.dat$riqueza, 2)
+)
 p <- add_trace(
   p,
   data = mod.dat,
@@ -103,14 +106,16 @@ p <- add_trace(
   marker = list(
     color = ~long_obs,
     colorscale = "Viridis",
-    colorbar = list(title = "Longitude",
-                    len = 0.4),
+    colorbar = list(
+      title = "Longitude",
+      len = 0.4
+    ),
     size = 3
   ),
-  name = "Observations",   # Legend label
+  name = "Observations", # Legend label
   text = ht,
   hoverinfo = "text",
-  showlegend = TRUE,       # Show this in the legend
+  showlegend = TRUE, # Show this in the legend
   opacity = 0.6
 )
 
@@ -142,15 +147,17 @@ for (g in groups) {
 
   # Triangulate the surface
   triangles <- delaunayn(data_g[, c("long", "Depth")])
-  i <- triangles[,1] - 1
-  j <- triangles[,2] - 1
-  k <- triangles[,3] - 1
+  i <- triangles[, 1] - 1
+  j <- triangles[, 2] - 1
+  k <- triangles[, 3] - 1
 
 
-  hover_text <- paste0("Tiempo: ", g, "<br>",
-                       "Longitude: ", data_g$long , "<br>",
-                       "Depth: ", data_g$Depth, "<br>",
-                       "Species Richness: ", round(data_g$fit, 2))
+  hover_text <- paste0(
+    "Tiempo: ", g, "<br>",
+    "Longitude: ", data_g$long, "<br>",
+    "Depth: ", data_g$Depth, "<br>",
+    "Species Richness: ", round(data_g$fit, 2)
+  )
 
   # Add mesh trace (with legend turned off)
   p <- add_trace(
@@ -166,18 +173,19 @@ for (g in groups) {
     opacity = 0.6,
     colors = rev(colorRampPalette(brewer.pal(10, "Spectral"))(41)),
     name = paste("Group", g),
-    showlegend = FALSE,   # This hides the mesh from the legend
+    showlegend = FALSE, # This hides the mesh from the legend
     flatshading = TRUE,
     showscale = FALSE
   )
-
 }
 
 # Add the shared marker trace with legend
-ht <- paste0("Tiempo_obs: ", mod.dat$tiempo_arrastre2, "<br>",
-                     "Longitude_obs: ", mod.dat$long , "<br>",
-                     "Depth_obs: ", mod.dat$Depth, "<br>",
-                     "Species Richness_obs: ", round(mod.dat$riqueza, 2))
+ht <- paste0(
+  "Tiempo_obs: ", mod.dat$tiempo_arrastre2, "<br>",
+  "Longitude_obs: ", mod.dat$long, "<br>",
+  "Depth_obs: ", mod.dat$Depth, "<br>",
+  "Species Richness_obs: ", round(mod.dat$riqueza, 2)
+)
 p <- add_trace(
   p,
   data = mod.dat,
@@ -189,14 +197,16 @@ p <- add_trace(
   marker = list(
     color = ~time_obs,
     colorscale = "Viridis",
-    colorbar = list(title = "Tiempo",
-                    len = 0.4),
+    colorbar = list(
+      title = "Tiempo",
+      len = 0.4
+    ),
     size = 3
   ),
-  name = "Observations",   # Legend label
+  name = "Observations", # Legend label
   text = ht,
   hoverinfo = "text",
-  showlegend = TRUE,       # Show this in the legend
+  showlegend = TRUE, # Show this in the legend
   opacity = 0.6
 )
 
@@ -219,7 +229,7 @@ p.fit.4d.time <- p
 library("ungeviz")
 nd <- expand.grid(
   tiempo_arrastre2 = 30,
-  long =  -64.4,
+  long = -64.4,
   Year_fac = 2009,
   Depth = seq(32, 176, 2)
 )
@@ -235,4 +245,3 @@ ggplot(mod.dat, aes(Depth, riqueza)) +
   geom_line(data = sample_df, aes(group = .draw), color = "#0072B2", size = 0.3) +
   geom_line(data = conf, size = 1, color = "darkred") +
   theme_bw()
-
