@@ -223,13 +223,14 @@ nd <- expand.grid(
 )
 sample_df <- sample_outcomes(m.3, newdata = nd, 30, unconditional = TRUE)
 conf <- confidence_band(m.3, newdata = nd, unconditional = TRUE)
+
 ggplot(mod.dat, aes(Depth, riqueza)) +
   # facet_grid(. ~ long) +
   # geom_ribbon(data = conf, aes(ymin = lo, ymax = hi), fill = "#80808040", color = NA) +
   geom_point(
-    alpha = 0.4,
-    position = position_dodge2(width = wd)
+    alpha = 0.4
   ) +
   geom_line(data = sample_df, aes(group = .draw), color = "#0072B2", size = 0.3) +
   geom_line(data = conf, size = 1, color = "darkred") +
   theme_bw()
+
