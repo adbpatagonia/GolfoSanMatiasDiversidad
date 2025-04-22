@@ -106,7 +106,7 @@ p.corr.mod.rest <-
 
 # multicollinearity
 corvif(mod.dat[, .(Year, area_barrida, tiempo_arrastre2, Depth, long)])
-multico <- corvif(mod.dat[, .(Year, area_barrida, Depth)])
+multico <- corvif(mod.dat[, .(Year, tiempo_arrastre2, Depth, long)])
 
 
 # map ----

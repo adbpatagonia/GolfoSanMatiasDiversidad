@@ -103,7 +103,8 @@ p <- add_trace(
   marker = list(
     color = ~long_obs,
     colorscale = "Viridis",
-    colorbar = list(title = "Longitude"),
+    colorbar = list(title = "Longitude",
+                    len = 0.4),
     size = 3
   ),
   name = "Observations",   # Legend label
@@ -188,7 +189,8 @@ p <- add_trace(
   marker = list(
     color = ~time_obs,
     colorscale = "Viridis",
-    colorbar = list(title = "Tiempo"),
+    colorbar = list(title = "Tiempo",
+                    len = 0.4),
     size = 3
   ),
   name = "Observations",   # Legend label

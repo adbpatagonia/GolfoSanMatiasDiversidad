@@ -12,6 +12,10 @@
 source(paste0(here::here(), "/analysis/0_ExplorarDatos.R"))
 # source("analysis/0_ExplorarDatos.R")
 
+# libraries -----
+library(gam.hp)
+
+
 
 # GAM models -----
 ## standardize x values -----
@@ -102,7 +106,7 @@ m.4 <- gam(
     s(long) +
     s(tiempo_arrastre2) +
     s(Year_fac, k = length(levels(mod.dat$Year_fac)), bs = "re") +
-    ti( Depth, tiempo_arrastre2) ,
+    ti(tiempo_arrastre2, Depth) ,
   method = "ML",
   data = mod.dat
 )
@@ -166,3 +170,6 @@ vis.gam(m.3, view = c("Depth", "long"))
 vis.gam(m.3, view = c("tiempo_arrastre2", "Depth"))
 vis.gam(m.3, view = c("tiempo_arrastre2", "long"))
 
+
+# partition of deviance ----
+p.var.part <- plot.gamhp(gam.hp(m.3), plot.perc = TRUE)
