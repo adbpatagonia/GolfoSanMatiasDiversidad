@@ -3,6 +3,7 @@ source(paste0(here::here(), "/analysis/2_plot_fits.R"))
 # libraries -----
 library(glmmTMB)
 library(DHARMa)
+library(MuMIn)
 
 
 
@@ -26,6 +27,10 @@ plot(simulationOutput)
 
 summary(mod)
 logLik(mod)
+# pseudo-rsquared of the GzLM
+r.squaredGLMM(m.3.lm)
+# pseudo-rsquared of the GAM
+r.squaredGLMM(m.3)
 parameters::parameters(mod)
 parameters::parameters(m.3)
 

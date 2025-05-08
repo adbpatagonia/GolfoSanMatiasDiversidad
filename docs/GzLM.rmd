@@ -51,14 +51,49 @@ Este modelo asume que los errores siguen una distribucion normal, y utliza un lo
 plot(simulationOutput)
 ```
 
-# Model fit   
+# Model fit      
+
 
 ```{r mfit.time.lm, fig.width  = 8, fig.height = 8, echo=FALSE, message=FALSE, warning=FALSE}
 p.fit.4d.time.lm
 ```
 
 
-
 ```{r mfit.long.lm, fig.width  = 8, fig.height = 8, echo=FALSE, message=FALSE, warning=FALSE}
 p.fit.4d.long.lm
 ```
+
+
+# Comparacion entre GzLM y GAM     
+
+Este es el pseudo-rsquared (`MuMIn::r.squaredGLMM`) del modelo lineal generalizado:    
+
+```{r rsq.gzlm, fig.width  = 5, fig.height = 3, echo=FALSE, message=FALSE, warning=FALSE}
+kable(round(r.squaredGLMM(m.3.lm), 4)) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover"),
+    position = "center", full_width = FALSE
+  )
+```
+
+
+El pseudo-rsquared del GAM (calculado usando `MuMIn::r.squaredGLMM`) es:   
+
+```{r rsq.gam, fig.width  = 5, fig.height = 3, echo=FALSE, message=FALSE, warning=FALSE}
+kable(round(r.squaredGLMM(m.3), 4)) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover"),
+    position = "center", full_width = FALSE
+  )
+```
+
+Deviance GzLM: `r round(deviance(m.3.lm), 1)`         
+Deviance GAM: `r round(deviance(m.3), 1)`       
+
+
+logLik GzLM: `r round(logLik(m.3.lm), 1)`     
+logLik GAM: `r round(logLik(m.3), 1)`      
+
+
+EDF GzLM: `r data.table(AIC(m.3, m.3.lm)) %>% mutate(model = c("gam", "gzlm")) %>% filter(model == "gzlm") %>% pull(df)`      
+EDF GAM: `r data.table(AIC(m.3, m.3.lm)) %>% mutate(model = c("gam", "gzlm")) %>% filter(model == "gam") %>% pull(df)  %>% round(., 2)`   
