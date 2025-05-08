@@ -22,6 +22,9 @@ library(gam.hp)
 mod.dat$Depth_st <- standardize_x(mod.dat$Depth)
 mod.dat$area_barrida_st <- standardize_x(mod.dat$area_barrida)
 mod.dat$long_st <- standardize_x(mod.dat$long)
+mod.dat$tiempo_arrastre2_st <-  standardize_x(mod.dat$tiempo_arrastre2)
+mod.dat$tiempo_arrastre2_st_2 <-  standardize_x(mod.dat$tiempo_arrastre2)
+
 # I fit the model with the standardized values, and the fit was identical
 # to the model fit without standardizing
 # given that the fit is the same, I decided to use the variables in the
