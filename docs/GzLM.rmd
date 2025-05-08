@@ -1,0 +1,64 @@
+---
+title: "Diversidad en el Golfo San Matias"
+author: "Alejandro Buren (CONICET-IAA)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+bibliography: hgams.bib   ## bibliographic library. Place in same folder as .Rmd
+theme: jekyll-theme-slate
+output:
+  html_document:
+    collapsed: no
+    fig_caption: yes
+    highlight: tango
+    number_sections: yes
+    smooth_scroll: yes
+    theme: spacelab
+    toc: yes
+    toc_float: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("kableExtra")
+library(gam.hp)
+library(parameters)
+library(GGally)
+# library('grid')
+library("plotly")
+library(data.table)
+
+options(scipen = 999)
+options(warn = -1)
+
+source(paste0(here::here(), "/analysis/3_Modelado_gzlm.R"))
+```
+
+Estos son los resultados de un modelo lineal generalizado (GzLM) equivalente al GAM presentado en https://adbpatagonia.github.io/GolfoSanMatiasDiversidad/      
+Este modelo asume que los errores siguen una distribucion normal, y utliza un log link. Notese que las variables explicativas fueron estandarizadas para facilitar el ajuste del modelo. Los resultados son presentados en terminos de las variabes en sus escalas originales.        
+
+`m.3.lm <- glmmTMB(
+  riqueza ~
+    Depth_st +
+    tiempo_arrastre2_st +
+    long_st +
+    tiempo_arrastre2_st * long_st +
+    (1|Year_fac) ,
+  data = mod.dat, family = gaussian(link = "log")
+)`
+
+# Model residuals    
+
+```{r residuals, fig.width  = 9, fig.height = 6, echo=FALSE, message=FALSE, warning=FALSE}
+plot(simulationOutput)
+```
+
+# Model fit   
+
+```{r mfit.time.lm, fig.width  = 8, fig.height = 8, echo=FALSE, message=FALSE, warning=FALSE}
+p.fit.4d.time.lm
+```
+
+
+
+```{r mfit.long.lm, fig.width  = 8, fig.height = 8, echo=FALSE, message=FALSE, warning=FALSE}
+p.fit.4d.long.lm
+```
