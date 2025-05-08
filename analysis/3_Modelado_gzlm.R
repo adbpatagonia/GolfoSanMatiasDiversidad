@@ -30,55 +30,28 @@ parameters::parameters(mod)
 parameters::parameters(m.3)
 
 # prepare data ----
-
-standardize_x(x = 176, mean_val = mean(mod.dat$Depth), sd_val = sd(mod.dat$Depth))
-
 new.dat.lm <- expand.grid(
-  tiempo_arrastre2 =  seq(15, 45, length.out = 10),
-  tiempo_arrastre2_st =  seq(-2.097858, 2.581987, length.out = 10),
-  # long = seq(min(mod.dat$long), max(mod.dat$long), length.out = 15),
-  # long = mean(mod.dat$long),
+  tiempo_arrastre2 = seq(15, 45, 1),
   long = c(-64, -64.4, -64.8),
-  long_st = c(1.761123, 0.201424, -1.358275),
   Year_fac = unique(mod.dat$Year_fac),
-  Depth_st = seq(-3.155327, 176, length.out = 70),
-  Depth = seq(32, 1.709766, length.out = 70)
-)
+  Depth = seq(32, 176, 2)
+) %>%
+  mutate(
+    Depth_st = standardize_x(x = Depth, mean_val = mean(mod.dat$Depth), sd_val = sd(mod.dat$Depth)),
+    long_st = standardize_x(x = long, mean_val = mean(mod.dat$long), sd_val = sd(mod.dat$long)),
+    tiempo_arrastre2_st = standardize_x(x = tiempo_arrastre2, mean_val = mean(mod.dat$tiempo_arrastre2), sd_val = sd(mod.dat$tiempo_arrastre2))
+  )
+
 
 preds <- predict(m.3.lm,
                  newdata = new.dat.lm,
                  se.fit = FALSE,
                  re.form = NA,
-                 # exclude = "s(Year_fac)",
                  type = "response"
 ) %>%
   data.frame() %>%
   rename(fit = ".") %>%
   bind_cols(new.dat.lm)
-
-# unstandardize x vars
-
-
-wd <- 0.4
-# ggplot(preds.lm) +
-#   geom_ribbon(
-#     aes(
-#       x = Depth,
-#       y = fit,
-#       ymin = (fit - 2 * se.fit),
-#       ymax = (fit + 2 * se.fit)
-#     ),
-#     alpha = 0.5,
-#     color = "transparent"
-#   ) +
-#   geom_line(aes(x = Depth, y = fit)) +
-#   geom_point(data = mod.dat,
-#        aes(x = Depth, y = riqueza),
-#     alpha = 0.4,
-#     position = position_dodge2(width = wd)
-#   ) +
-#   facet_wrap(. ~ Year_fac) +
-#   ylab("Species Richness")
 
 
 # 4th var: longitude ----
@@ -173,7 +146,7 @@ p.fit.4d.long.lm <- p
 # 4th var: tiempo de arrastre ----
 # Split the data by group
 groups <- unique(preds$tiempo_arrastre2)
-groups <- c(20, 30, 40)
+groups <- c(15, 35, 45)
 
 
 # Base plot
@@ -261,3 +234,7 @@ p <- layout(
 
 p.fit.4d.time.lm <- p
 
+
+
+p.fit.4d.long.lm
+p.fit.4d.time.lm
