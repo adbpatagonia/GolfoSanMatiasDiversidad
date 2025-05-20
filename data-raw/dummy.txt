@@ -1,0 +1,3 @@
+este archivo solo sirve la funcion de crear un commit en el cual se cree la carpeta data-raw/ en el repositorio
+
+Para poder replicar los analisis hay que copiar el archivo datos_modelos_corregido.csv (que me envio Guille) en esta carpeta
