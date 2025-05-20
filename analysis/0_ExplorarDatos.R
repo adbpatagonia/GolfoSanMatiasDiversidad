@@ -174,10 +174,12 @@ p.map <-
     legend.position = "bottom",
     legend.title = element_blank()
   ) +
+  guides(fill = guide_colorbar(reverse = TRUE)) +
   guides(colour = guide_legend(nrow = 1, byrow = TRUE, title = ""))
 
 
 
+#
 
 # output -----
 

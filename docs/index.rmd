@@ -423,7 +423,7 @@ En el segundo caso:
   * 3 superficies: valores de longitud  -64, -64.4, y -64.8   
   * los datos están codificados con respecto a longitud (ver escala)    
   
-Aquí es notable por qué en los lances hechos mas al este (longitud -64.8) el efecto del tiempo de arrastre es menor (hay varios datos con baja riqueza que actuan como ancla).   
+Aquí es notable por qué en los lances hechos mas al oeste (longitud -64.8) el efecto del tiempo de arrastre es menor (hay varios datos con baja riqueza que actuan como ancla).   
 También es claro que el efecto de tiempo de arrastre es positivo: con tiempos de arrastre de 15 minutos la riqueza es baja, y aumenta con tiempo de arraste de 30 minutos.   
   
 ```{r mfit.long, fig.width  = 8, fig.height = 8, echo=FALSE, message=FALSE, warning=FALSE}
