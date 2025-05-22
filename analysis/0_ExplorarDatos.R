@@ -4,6 +4,13 @@
 # datos provistos por el Dr Guillermo Svendsen (CONICET - Centro Almirante Storni),
 # como parte de la tesis de Josefina Cuesta Nunez (Universidad del Comahue, CONICET - Centro Almirante Storni)
 
+# 2025-05-22 Josefina me envio datos actualizados
+# data/datos_completos.rds
+# 1. contiene datos de 2024
+# 2. profundidad de 2027 esta expresada en mts (previamente estaba en brazas)
+# 3. las aras barridas fueron corregidas
+
+
 # this script reads the data and carries out data exploration
 
 # libraries -----
@@ -30,9 +37,12 @@ source(paste0(here::here(), "/R/lat-lon-labels.R"))
 # data -----
 fish.dat <- fread(paste0(here::here(), "/data-raw/datos_modelos_corregido.csv"))
 
+fish.dat <- readRDS(paste0(here::here(), "/data/datos_completos.rds")) %>%
+  data.table()
+
 # wrangle data ----
 ## drop first colmn ----
-fish.dat[, V1 := NULL]
+# fish.dat[, V1 := NULL]
 ## column names ----
 fish.dat <- janitor::clean_names(fish.dat)
 
@@ -42,9 +52,12 @@ fish.dat <- fish.dat %>%
     Depth = prof
   )
 
+## tiempo arrastre ------
+fish.dat[, tiempo_arrastre2 := as.numeric(tiempo_arrastre2)]
 ## Profundidad 2007 ------
 # la profundidad en 2007 fue tomada en brazas - corregir a metros
-fish.dat[Year == 2007, Depth := 1.6718 * Depth]
+
+# fish.dat[Year == 2007, Depth := 1.6718 * Depth]
 
 # explore data -----
 ggplot(fish.dat[Year < 2022]) +
