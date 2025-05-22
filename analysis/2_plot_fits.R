@@ -135,7 +135,7 @@ p.fit.4d.long <- p
 # 4th var: tiempo de arrastre ----
 # Split the data by group
 groups <- unique(preds$tiempo_arrastre2)
-groups <- c(20, 30, 40)
+groups <- c(20, 30, 35)
 
 
 # Base plot

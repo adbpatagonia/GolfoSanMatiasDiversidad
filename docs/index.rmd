@@ -38,7 +38,7 @@ Guillermo me contacto para ayudar con el analisis de estos datos
 Los analisis se encuentran en [**este repositorio**](https://github.com/adbpatagonia/GolfoSanMatiasDiversidad).
 
 El repositorio no contiene los datos ni el borrador del manuscrito.\
-Para poder replicar los analisis hay que copiar el archivo `datos_modelos_corregido.csv` (que me envio Guille) en la carpeta `data-raw`.
+Para poder replicar los analisis hay que copiar el archivo `datos_completos.rds` (que me envio Josefina) en la carpeta `data`.
 
 # Preguntas
 
