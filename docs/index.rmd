@@ -491,40 +491,40 @@ Luego de la reunion con el grupo de trabajo se decidio hacer estas actualizacion
    * Incluir el efecto de la variable "lance": este es un identificador del lance. Es un identificador del lugar donde se realizo el lance. Lo incluiremos para tener en cuenta la correlacion espcaial (efecto aleatorio).       
    * cambiar la estructura del efecto de año. En este momento la estamos usando como una variable aleatorio (random intercept). La cambiaremos a una variable fija (continua, smooth effect).    
       
-## Incluir Lance ID      
+<!-- ## Incluir Lance ID       -->
 
-Inclui el efecto de lance como variable aleatoria al mejor modelo.   
+<!-- Inclui el efecto de lance como variable aleatoria al mejor modelo.    -->
 
-`m.3.lance <- gam(
-  riqueza ~
-    s(Depth) +
-    s(tiempo_arrastre2) +
-    s(long) +
-    s(lance, k = length(levels(mod.dat$lance)), bs = "re") +
-    s(Year_fac, k = length(levels(mod.dat$Year_fac)), bs = "re") +
-    ti(tiempo_arrastre2, long),
-  method = "ML",
-  data = mod.dat
-)`
+<!-- `m.3.lance <- gam( -->
+<!--   riqueza ~ -->
+<!--     s(Depth) + -->
+<!--     s(tiempo_arrastre2) + -->
+<!--     s(long) + -->
+<!--     s(lance, k = length(levels(mod.dat$lance)), bs = "re") + -->
+<!--     s(Year_fac, k = length(levels(mod.dat$Year_fac)), bs = "re") + -->
+<!--     ti(tiempo_arrastre2, long), -->
+<!--   method = "ML", -->
+<!--   data = mod.dat -->
+<!-- )` -->
 
-Elegi presentarlo de esta manera para evitar tener que repetir el ejercicio de seleccion de modelos. Pero inclui el efecto  a todos los modelos presentados, y los resultados son consistentes independientemente del modelo.  
-
-
-
-El efecto de lance no es significativo (pvalue: `r round(data.table(parameters::parameters(m.3.lance))[grepl(x = Parameter, pattern = "lance"), (p)], 4) `)    
-
-```{r summary.m.3.lance, echo=FALSE, message=FALSE, warning=FALSE}
-summary(m.3.lance)
-```
+<!-- Elegi presentarlo de esta manera para evitar tener que repetir el ejercicio de seleccion de modelos. Pero inclui el efecto  a todos los modelos presentados, y los resultados son consistentes independientemente del modelo.   -->
 
 
-Incluir el efecto de Lance ID no mejora el ajuste del modelo 
 
-logLik m.3: `r round(logLik(m.3), 1)`    
-logLik m.3.lance: `r round(logLik(m.3.lance), 1)`     
+<!-- El efecto de lance no es significativo (pvalue: `r round(data.table(parameters::parameters(m.3.lance))[grepl(x = Parameter, pattern = "lance"), (p)], 4) `)     -->
+
+<!-- ```{r summary.m.3.lance, echo=FALSE, message=FALSE, warning=FALSE} -->
+<!-- summary(m.3.lance) -->
+<!-- ``` -->
 
 
-Esto lo interpreto como eviencia de que el efecto de la locacion sobre la riqueza queda completamente descripta por los efectos de profundidad y longitud.    
-Por lo tanto, no lo incluire en el modelo final.    
+<!-- Incluir el efecto de Lance ID no mejora el ajuste del modelo  -->
+
+<!-- logLik m.3: `r round(logLik(m.3), 1)`     -->
+<!-- logLik m.3.lance: `r round(logLik(m.3.lance), 1)`      -->
+
+
+<!-- Esto lo interpreto como eviencia de que el efecto de la locacion sobre la riqueza queda completamente descripta por los efectos de profundidad y longitud.     -->
+<!-- Por lo tanto, no lo incluire en el modelo final.     -->
 
 # Referencias
