@@ -92,7 +92,7 @@ ggplot(fish.dat) +
 
 ## assess correlation among explanatory vars ----
 
-mod.dat <- fish.dat[, .(riqueza, Year, area_barrida, tiempo_arrastre2, Depth, long)]
+mod.dat <- fish.dat[, .(riqueza, lance, Year, area_barrida, tiempo_arrastre2, Depth, long)]
 
 # correlation between:
 # 1. area_barrida y tiempo de arrastre (r = 0.692). Podemos usar solo una - desde un punto de vista logico, creo que area_barrida debe ser mejor variable para explicar la cantidad de spp

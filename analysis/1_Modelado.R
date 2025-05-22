@@ -32,6 +32,7 @@ mod.dat$tiempo_arrastre2_st_2 <-  standardize_x(mod.dat$tiempo_arrastre2)
 
 # Year as random effect (random intercept)
 mod.dat$Year_fac <- as.factor(mod.dat$Year)
+mod.dat$lance <- as.factor(mod.dat$lance)
 
 ## fit full model -----
 # include Year as a random effect
@@ -41,7 +42,8 @@ m.1 <- gam(
     s(Depth, bs = "tp") +
     s(long, bs = "tp") +
     s(tiempo_arrastre2, bs = "tp") +
-    s(Year_fac, k = length(levels(mod.dat$Year_fac)), bs = "re"),
+    s(Year_fac, k = length(levels(mod.dat$Year_fac)), bs = "re") ,
+    # s(lance, k = length(levels(mod.dat$lance)), bs = "re"),
   method = "ML",
   data = mod.dat
 )
@@ -62,6 +64,7 @@ m.2 <- gam(
     s(long) +
     s(tiempo_arrastre2) +
     s(Year_fac, k = length(levels(mod.dat$Year_fac)), bs = "re") +
+    # s(lance, k = length(levels(mod.dat$lance)), bs = "re") +
     ti(Depth, long, tiempo_arrastre2),
   method = "ML",
   data = mod.dat
@@ -84,6 +87,7 @@ m.3 <- gam(
     s(Depth) +
     s(tiempo_arrastre2) +
     s(long) +
+    # s(lance, k = length(levels(mod.dat$lance)), bs = "re") +
     s(Year_fac, k = length(levels(mod.dat$Year_fac)), bs = "re") +
     ti(tiempo_arrastre2, long),
   method = "ML",
@@ -108,6 +112,7 @@ m.4 <- gam(
     s(Depth) +
     s(long) +
     s(tiempo_arrastre2) +
+    # s(lance, k = length(levels(mod.dat$lance)), bs = "re") +
     s(Year_fac, k = length(levels(mod.dat$Year_fac)), bs = "re") +
     ti(tiempo_arrastre2, Depth),
   method = "ML",
@@ -179,3 +184,52 @@ vis.gam(m.3, view = c("tiempo_arrastre2", "long"))
 
 # partition of deviance ----
 p.var.part <- plot.gamhp(gam.hp(m.3), plot.perc = TRUE)
+
+
+# Include Lance -----
+
+m.3.lance <- gam(
+  riqueza ~
+    s(Depth) +
+    s(tiempo_arrastre2) +
+    s(long) +
+    s(lance, k = length(levels(mod.dat$lance)), bs = "re") +
+    s(Year_fac, k = length(levels(mod.dat$Year_fac)), bs = "re") +
+    ti(tiempo_arrastre2, long),
+  method = "ML",
+  data = mod.dat
+)
+
+### model check -----
+mod <- m.3.lance
+
+k.check(mod)
+appraise(mod)
+draw(mod) +
+  theme_minimal() +
+  scale_fill_viridis_c() +
+  labs(title = "Partial Effects in m.3.lance")
+
+summary(mod)
+
+# Include year as fixed -----
+#' @ADB to include models with lance ID as random effect
+#' I already did for all models, and they were not significant
+#' I will do it separately so that I can show the team why I will not
+#' include it in the final models
+#'
+#' @ADB2 change Year to be a smooth tprs
+#' not working at the moment, I believe it is becasue tiempo arrastre
+#' and Year contain the same info
+#' When adding the 2024 data, this problem may go away
+# m.3.y <- gam(
+#   riqueza ~
+#     s(Depth) +
+#     s(tiempo_arrastre2) +
+#     s(long) +
+#     s(Year) +
+#     # s(lance, k = length(levels(mod.dat$lance)), bs = "re") +
+#     ti(tiempo_arrastre2, long),
+#     method = "ML",
+#   data = mod.dat
+# )
