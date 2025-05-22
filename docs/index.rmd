@@ -113,7 +113,9 @@ kable(fish.dat[!is.na(tiempo_arrastre2), .N, keyby = Year]) %>%
 ```{r plot.datos, fig.width  = 8, fig.height = 3, echo=FALSE, message=FALSE, warning=FALSE}
 ggplotly(
   ggplot(mod.dat) +
-    geom_histogram(aes(x = riqueza, fill = Year_fac))
+    geom_histogram(aes(x = riqueza, fill = Year_fac,
+                   text = paste("Year:", Year_fac,"<br>", "Riqueza:", riqueza,"<br>", "Lance:", lance)   )),
+  tooltip = "text"
 )
 ```
 
@@ -122,7 +124,9 @@ Registros continuos de profundidad.
 ```{r plot.datos2, fig.width  = 8, fig.height = 3, echo=FALSE, message=FALSE, warning=FALSE}
 ggplotly(
   ggplot(mod.dat) +
-    geom_histogram(aes(x = Depth, fill = Year_fac))
+    geom_histogram(aes(x = Depth, fill = Year_fac,
+                       text = paste("Year:", Year_fac,"<br>", "Depth:", Depth,"<br>", "Lance:", lance)   )),
+  tooltip = "text"
 )
 ```
 
@@ -131,7 +135,9 @@ Los registros de longitud indican que los lances fueron hechos en lugares discre
 ```{r plot.datos3, fig.width  = 8, fig.height = 3, echo=FALSE, message=FALSE, warning=FALSE}
 ggplotly(
   ggplot(mod.dat) +
-    geom_histogram(aes(x = long, fill = Year_fac))
+    geom_histogram(aes(x = long, fill = Year_fac,
+                       text = paste("Year:", Year_fac,"<br>", "Longitud:", long,"<br>", "Lance:", lance)   )),
+  tooltip = "text"
 )
 ```
 
@@ -143,11 +149,15 @@ Notese que hay un lance en 2007 con vaor de area barrida muy baja (\<0.02), y un
 ```{r plot.datos4, fig.width  = 8, fig.height = 3, echo=FALSE, message=FALSE, warning=FALSE}
 ggplotly(
   ggplot(mod.dat) +
-    geom_histogram(aes(x = tiempo_arrastre2, fill = Year_fac))
+    geom_histogram(aes(x = tiempo_arrastre2, fill = Year_fac,
+                       text = paste("Year:", Year_fac,"<br>", "TiempoArrastre:", tiempo_arrastre2,"<br>", "Lance:", lance)   )),
+  tooltip = "text"
 )
 ggplotly(
   ggplot(mod.dat) +
-    geom_histogram(aes(x = area_barrida, fill = Year_fac))
+    geom_histogram(aes(x = area_barrida, fill = Year_fac,
+                       text = paste("Year:", Year_fac,"<br>", "AreaBarrida:", area_barrida,"<br>", "Lance:", lance)   )),
+  tooltip = "text"
 )
 ```
 
@@ -158,7 +168,8 @@ La riqueza de especies incrementa durante los 3 primeros años, al parecer se ma
 ```{r plot.datos5, fig.width  = 8, fig.height = 3, echo=FALSE, message=FALSE, warning=FALSE}
 ggplotly(
   ggplot(mod.dat) +
-    geom_point(aes(y = riqueza, x = Year, label = Depth), position = position_dodge2(width = 0.3), alpha = 0.4)
+    geom_point(aes(y = riqueza, x = Year, text=sprintf("Lance: %s", lance )),
+               position = position_dodge2(width = 0.3), alpha = 0.4)
 )
 ```
 
@@ -169,7 +180,7 @@ ggplotly(
   ggplot(mod.dat) +
     geom_point(aes(
       y = riqueza, x = Depth,
-      label = Year_fac,
+      text=sprintf("Lance: %s", lance ),
       color = Year_fac
     ), alpha = 0.4)
 )
@@ -182,7 +193,7 @@ ggplotly(
   ggplot(mod.dat) +
     geom_point(aes(
       y = riqueza, x = long,
-      label = Year_fac,
+      text=sprintf("Lance: %s", lance ),
       color = Year_fac
     ), alpha = 0.4)
 )
@@ -192,10 +203,14 @@ No veo relacion clara entre riqueza y area barrida o tiempo de arrastre. Lo unic
 
 ```{r plot.datos7, fig.width  = 8, fig.height = 3, echo=FALSE, message=FALSE, warning=FALSE}
 ggplotly(ggplot(mod.dat) +
-  geom_point(aes(y = riqueza, x = area_barrida, label = Year, color = Year_fac), alpha = 0.4))
+           geom_point(aes(y = riqueza, x = area_barrida,
+                          text=sprintf("Lance: %s", lance ),
+                          color = Year_fac), alpha = 0.4))
 
 ggplotly(ggplot(mod.dat) +
-  geom_point(aes(y = riqueza, x = tiempo_arrastre2, label = Year, color = Year_fac), alpha = 0.4))
+  geom_point(aes(y = riqueza, x = tiempo_arrastre2, 
+                 text=sprintf("Lance: %s", lance ),
+                 color = Year_fac), alpha = 0.4))
 
 
 
@@ -230,6 +245,7 @@ En charlas con Guille, él me expresó que están intersados en como la riqueza 
 
 
 
+
 ## Correlaciones entre variables explicativas
 
 Hay correlacion entre:
@@ -239,6 +255,9 @@ Hay correlacion entre:
 -   Año y area barrida (`pearson r =` `r round(cor(mod.dat[,(Year)], mod.dat[,(area_barrida)]), 2)`): esto esta dado porque en 2022 se muestreo de manera diferente. .\
 -   Año y tiempo de arrastre (`pearson r =` `r round(cor(mod.dat[,(Year)], mod.dat[,(tiempo_arrastre2)]), 2)`): *Idem* area barrida.
 
+```{r corr, fig.width  = 8, fig.height = 3, echo=FALSE, message=FALSE, warning=FALSE}
+p.corr.mod.dat
+```
 
 Esta tabla muestra la multicolinearidad (@zuur_etal_2010) entre las variables retenidas (excluyendo área barrida). Todas son \< 2, por lo que podemos incluirlas sin inconvenientes en los modelos.
 
@@ -336,7 +355,18 @@ kable(ms) %>%
   )
 ```
 
-## Best Model    
+## Best Model      
+
+### Model residuals    
+
+Estos son los residuales del modelo mas parsimonioso    
+
+
+
+```{r resids, echo=FALSE, message=FALSE, warning=FALSE}
+appraise(m.3) 
+```
+
 
 ### Efectos parciales de variables explicativas         
 
@@ -450,5 +480,51 @@ p.fit.4d.long
 esta diferenciación quizas se pueda hacer en el futuro si se continua muestreando con la misma metodologia que en 2022. Mientras tanto, se debera recurrir a lineas alternativas de evidencia, por ejemplo la curva de acumulacion de especies que produjo Josefina. 
 
 ![](spacc_curve.png "Species Accumulation Curve")
+
+
+# Updates May 2025
+
+Luego de la reunion con el grupo de trabajo se decidio hacer estas actualizaciones:     
+
+
+   * Incluir datos de 2024. Estos tienen tiempos de arrastre entre 15 y 25 minutos. Estos datos pueden ayudar a separar el efecto de año del efecto de tiempo de arrastre     
+   * Incluir el efecto de la variable "lance": este es un identificador del lance. Es un identificador del lugar donde se realizo el lance. Lo incluiremos para tener en cuenta la correlacion espcaial (efecto aleatorio).       
+   * cambiar la estructura del efecto de año. En este momento la estamos usando como una variable aleatorio (random intercept). La cambiaremos a una variable fija (continua, smooth effect).    
+      
+## Incluir Lance ID      
+
+Inclui el efecto de lance como variable aleatoria al mejor modelo.   
+
+`m.3.lance <- gam(
+  riqueza ~
+    s(Depth) +
+    s(tiempo_arrastre2) +
+    s(long) +
+    s(lance, k = length(levels(mod.dat$lance)), bs = "re") +
+    s(Year_fac, k = length(levels(mod.dat$Year_fac)), bs = "re") +
+    ti(tiempo_arrastre2, long),
+  method = "ML",
+  data = mod.dat
+)`
+
+Elegi presentarlo de esta manera para evitar tener que repetir el ejercicio de seleccion de modelos. Pero inclui el efecto  a todos los modelos presentados, y los resultados son consistentes independientemente del modelo.  
+
+
+
+El efecto de lance no es significativo (pvalue: `r round(data.table(parameters::parameters(m.3.lance))[grepl(x = Parameter, pattern = "lance"), (p)], 4) `)    
+
+```{r summary.m.3.lance, echo=FALSE, message=FALSE, warning=FALSE}
+summary(m.3.lance)
+```
+
+
+Incluir el efecto de Lance ID no mejora el ajuste del modelo 
+
+logLik m.3: `r round(logLik(m.3), 1)`    
+logLik m.3.lance: `r round(logLik(m.3.lance), 1)`     
+
+
+Esto lo interpreto como eviencia de que el efecto de la locacion sobre la riqueza queda completamente descripta por los efectos de profundidad y longitud.    
+Por lo tanto, no lo incluire en el modelo final.    
 
 # Referencias
