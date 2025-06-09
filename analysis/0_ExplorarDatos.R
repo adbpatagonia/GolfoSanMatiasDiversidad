@@ -121,8 +121,8 @@ p.corr.mod.rest <-
   ggpairs(mod.dat[, .(Year, area_barrida, Depth)])
 
 # multicollinearity
-corvif(mod.dat[, .(Year, area_barrida, tiempo_arrastre2, Depth, long)])
-multico <- corvif(mod.dat[, .(Year, tiempo_arrastre2, Depth, long)])
+# corvif(mod.dat[, .(Year, area_barrida, tiempo_arrastre2, Depth, long)])
+# multico <- corvif(mod.dat[, .(Year, tiempo_arrastre2, Depth, long)])
 
 
 # map ----

@@ -40,6 +40,21 @@ Los analisis se encuentran en [**este repositorio**](https://github.com/adbpatag
 El repositorio no contiene los datos ni el borrador del manuscrito.\
 Para poder replicar los analisis hay que copiar el archivo `datos_completos.rds` (que me envio Josefina) en la carpeta `data`.
 
+
+# Updates May 2025     
+
+A mediados de mayo 2025, mantuvimos una reunion Josefina, Alejandra, Guillermo, Matias y yo.   
+Luego de la reunion con el grupo de trabajo se decidio hacer estas actualizaciones:     
+
+
+   1. Incluir datos de 2024. Estos tienen tiempos de arrastre entre 15 y 25 minutos. Estos datos pueden ayudar a separar el efecto de año del efecto de tiempo de arrastre    
+   2 . cambiar la estructura del efecto de año. En este momento la estamos usando como una variable aleatorio (random intercept). La cambiaremos a una variable fija (continua, smooth effect).     
+      
+   3. Incluir el efecto de la variable "lance": este es un identificador del lance. Es un identificador del lugar donde se realizo el lance. Lo incluiremos para tener en cuenta la correlacion espcaial (efecto aleatorio).       
+
+   
+Los resultados de la parte principal del documento incorporan los datos del 2024. Sobre la parte final del documento abordo los ultimos dos puntos.   
+
 # Preguntas
 
 La diversidad de especies en el Golfo San Matias se describe utilizando el indice Species Richness.\
@@ -262,6 +277,7 @@ p.corr.mod.dat
 Esta tabla muestra la multicolinearidad (@zuur_etal_2010) entre las variables retenidas (excluyendo área barrida). Todas son \< 2, por lo que podemos incluirlas sin inconvenientes en los modelos.
 
 ```{r multocollinearity, echo=FALSE, message=FALSE, warning=FALSE}
+multico <- corvif(mod.dat[, .(Year, tiempo_arrastre2, Depth, long)])
 kable(multico) %>%
   kable_styling(
     bootstrap_options = c("striped", "hover"),
@@ -377,17 +393,17 @@ Es importante notar que cada gráfico tiene diferentes eje Y, es decir que hay v
 
 Efecto de profundidad (pvalue: `r round(data.table(parameters::parameters(m.3))[grepl(x = Parameter, pattern = "Depth"), (p)], 4) `): exponencialmente negativa hasta alrededor de 120 m, y mas alla de esa profundidad el efefecto aumenta y luego baja.    
 
-Efecto de tiempo de arrastre (pvalue: `r round(data.table(parameters::parameters(m.3))[grepl(x = Parameter, pattern = "arrastre2)"), (p)], 4) `): mucho menor que el efecto de profundidad (ver la escala del eje Y). Es una relacion lineal positiva; esto es un proxy de año ya que se registro menor diversidad el año en el que el tiempo de arrastre fue menor (2022).     
+Efecto de tiempo de arrastre (pvalue: `r round(data.table(parameters::parameters(m.3))[grepl(x = Parameter, pattern = "arrastre2)"), (p)], 4) `): mucho menor que el efecto de profundidad (ver la escala del eje Y). Es una relacion lineal positiva.     
 
 Efecto de longitud (pvalue: `r round(data.table(parameters::parameters(m.3))[grepl(x = Parameter, pattern = "long") & !grepl(x = Parameter, pattern = ","), (p)], 4) `): efecto lineal, aumenta la riqueza a medida que uno se mueve de oeste a este.    
 
-Efecto de año (pvalue: `r round(data.table(parameters::parameters(m.3))[grepl(x = Parameter, pattern = "Year"), (p)], 4) `): `r simulate_parameters(m.3) %>% 
+Efecto de año (pvalue: `r round(data.table(parameters::parameters(m.3))[grepl(x = Parameter, pattern = "Year"), (p)], 4) `). Nótese que los valores de los parámetros tomaron valores más negativos en 2022, 2024, y 2006.   : `r simulate_parameters(m.3) %>% 
 data.table() %>% 
 filter(grepl(pattern = "Year", x = Parameter)) %>% 
 mutate(year = unique(mod.dat$Year)) %>% 
 select(year, Coefficient) %>% 
 arrange(desc(Coefficient)) %>% 
-pull(year)`.     
+kable()`     
 
 Efecto de interaccion entre longitud y tiempo de arrastre (pvalue: `r round(data.table(parameters::parameters(m.3))[grepl(x = Parameter, pattern = ","), (p)], 4) `): esta interacción es un poco complicada interpretarla a partir de este gráfico. Este efecto será mas claro en la próxima seccion. 
 
@@ -395,7 +411,7 @@ Efecto de interaccion entre longitud y tiempo de arrastre (pvalue: `r round(data
 Más allá de que el efecto de año no es estadísticamante significativo, lo mantuve porque desde el punto de vista teórico tiene sentido considerar que esta variable representa potenciales diferencias interanuales en el estado del ecosistema.    
 
 ```{r partialeffects, echo=FALSE, message=FALSE, warning=FALSE}
-draw(m.3) +
+draw(m.3, residuals = TRUE) +
   theme_minimal() +
   scale_fill_viridis_c()
 ```
@@ -433,13 +449,12 @@ En ambos casos:
 En el primer caso:   
 
   * Eje X: longitud    
-  * 3 superficies: valores de tiempo de arrastre de 20, 30, y 40 minutos    
+  * 3 superficies: valores de tiempo de arrastre de 15, 20, 30, y 40 minutos    
   * los datos están codificados con respecto a tiempo de arrastre (ver escala)
 
 
 Aquí se ve claramente el efecto de profundidad, la riqueza decae a medida que la profundidad aumenta.  
-El efecto de la interacción entre tiempo de arrastre y longitud se ve al girar un poco el gráfico - se ve que los planos se cruzan alrededor de -64.6. Con tiempos de arrastre más cortos, el efecto de longitud es menos pronunciado que con tiempos de arrastre más largos. 
-
+El efecto de la interacción entre tiempo de arrastre y longitud se ve al girar un poco el gráfico - se ve que los planos se cruzan alrededor de -64.6. Con tiempos de arrastre más cortos, el efecto de longitud es menos pronunciado que con tiempos de arrastre más largos. Al añadir los datos de 2024, los planos de ajuste ahora están retorcidos - esto va a ser más claro en el tercer gráfico en 3D.    
 
 
 ```{r mfit.time, fig.width  = 8, fig.height = 8, echo=FALSE, message=FALSE, warning=FALSE}
@@ -460,10 +475,24 @@ También es claro que el efecto de tiempo de arrastre es positivo: con tiempos d
 p.fit.4d.long
 ```
 
+En el tercer caso:   
+
+  * Eje X: tiempo de arrastre       
+  * Eje Y: longitud    
+  * 3 superficies: valores de profundidad  60m, 80m, y 170m   
+  * los datos están codificados con respecto a profundidad (ver escala)    
+  
+Aquí los planos son paralelos ya que la variable que esta  representada por las multiples superficies (profundidad) no esta incluida en la interacción del modelo. 
+La interacción entre longitud y tiempo de arratre se ve como los planos están retorcidos.    
+  
+```{r mfit.depth, fig.width  = 8, fig.height = 8, echo=FALSE, message=FALSE, warning=FALSE}
+p.fit.4d.depth
+```
+
 
 # Conclusiones         
 
--   Parece haber algo sospechoso con algunos de los registros de area barrida. Quizas seria bueno repasar que los calculos esten bien hechos.\      
+-   Parece haber algo sospechoso con algunos de los registros de area barrida. Quizas seria bueno repasar que los calculos esten bien hechos.   \      
 -   La variable que explica la mayor cantidad de variabilidad es Profundidad.\ 
 
 
@@ -481,50 +510,251 @@ esta diferenciación quizas se pueda hacer en el futuro si se continua muestrean
 
 ![](spacc_curve.png "Species Accumulation Curve")
 
-
-# Updates May 2025
-
-Luego de la reunion con el grupo de trabajo se decidio hacer estas actualizaciones:     
+##   Conclusiones de haber incorporado 2024     
 
 
-   * Incluir datos de 2024. Estos tienen tiempos de arrastre entre 15 y 25 minutos. Estos datos pueden ayudar a separar el efecto de año del efecto de tiempo de arrastre     
-   * Incluir el efecto de la variable "lance": este es un identificador del lance. Es un identificador del lugar donde se realizo el lance. Lo incluiremos para tener en cuenta la correlacion espcaial (efecto aleatorio).       
-   * cambiar la estructura del efecto de año. En este momento la estamos usando como una variable aleatorio (random intercept). La cambiaremos a una variable fija (continua, smooth effect).    
+-   Parece haber algo sospechoso con algunos de los registros de area barrida. Quizas seria bueno repasar que los calculos esten bien hechos.  -- Update: algunos de estos valores que parecen erróneos fueron corregidos, pero persisten algunos valores extraños.   \     
+
+-   La forma del efecto parcial del tiempo de arrastre cambió y ahora se estimó que el efecto es lineal positivo, mientras en la interacción anterior el efecto llegaba a una asíntota.       
+
+-   El efecto de la interacción entre longitud y tiempo de arrastre queda mejor definido, dado que hay mayor variabilidad en los tiempos de arrastre. El efecto es ligeramente mas intenso que lo que se habia estimado previamente.     
+
+-   La riqueza promedio registrada en 2024 fue mayor que en 2022, pero aún así fue la segunda menor riqueza registrada.  
+Ha decaído la riqueza en el Golfo San Matías en los últimos años? Es posible, pero me parece que este análisis no provee una respuesta definitiva. Creo que valdría la pena rehacer la curva de acumulacion de especies incluyendo los datos de 2024. Existen otras evidencias?        
+
+```{r riqueza, fig.width  = 5, fig.height = 3, echo=FALSE, message=FALSE, warning=FALSE}
+kable( fish.dat[,  round(mean(riqueza),1), keyby = Year] %>% rename(riqueza_promedio = V1)) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover"),
+    position = "center", full_width = FALSE
+  )
+```
+
+
+# Updates May 2025    
+
+El mayor inconveniente con los dos puntos siguientes (1. usar año como variable continua, 2. incluir Lance ID como variable aleatoria), es quela vlidez de comparar modelos con diferente estructura de variables aleatorias no ha sido establecida, e.g. https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#can-i-use-aic-for-mixed-models-how-do-i-count-the-number-of-degrees-of-freedom-for-a-random-effect     
+
+Siempre, y en este caso en particular, corresponde establecer la estructura de variabls alaetorias basado en criterios ecológicos.    
+
+
+
+En lo que sigue, repetí el ejercicio de ajustar todos los modelos, y hacer selección de modelos para analizar si los resulados son consistentes, independientemente de la estructura de los efectos aleatorios. Luego, comparo los ajustes de los modelos con las distintas estructuras -- esta parte debe ser tomada con precaución.   
+
+
+## Año como variable continua       
+
+
+Criterio ecológico: dado que año es un proxy de procesos que ocurren en el ecosistema, pero que no son considerados en la estructura del modelo    
+
+   * Año como variable continua: esto asume que estos procesos ecosistemicos toman una forma continua y "smooth" a lo largo del tiempo.    
+   * Año como variable aleatoria: esto asume que estos procesos ecosistemicos son aleatorias y que pueden variar entre años sin necesariamente seguir un patrón, *i.e.* puede ser positivo en año *t* y negativo en año *t+1*.     
+   
+A mi me resulta mas razonable asumir que el año como variable aleatoria.       
+
+
+```{r runyearc, echo=FALSE, message=FALSE, warning=FALSE}
+source(paste0(here::here(), "/analysis/1_Modelado_YearContinuous.R"))
+```
+
+### Model selection        
+
+El mejor modelo es consistentemente el que incluye la interaccion entre longitud y tiempo de arrastre.   
+
+```{r modelselection.yearc, echo=FALSE, message=FALSE, warning=FALSE}
+kable(ms.y) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover"),
+    position = "center",
+    row_label_position = "left",
+    full_width = FALSE
+  )
+```
+
+### Efectos parciales de variables explicativas      
+
+Aquí es notable que el efecto de año toma una forma "dome-shaped", pero la magnitud del efecto parcial es bajo - tal es así que los intervalos de confianza solapan cero en todos los años.     
+También es notable que cambia la forma de los efectos parciales de tiempo de arrastre (de una función lineal a una asintótica)    
+
+```{r partialeffects.y, echo=FALSE, message=FALSE, warning=FALSE}
+draw(m.3.y, residuals = TRUE) +
+  theme_minimal() +
+  scale_fill_viridis_c()
+```
+
+### Comparacion de funciones smooth      
+
+Aquí se comparan los efectos parciales (funciones smooth, se excluyen las variables aleatorias) de:      
+
+   * m.3: modelo con año como variable aleatoria (el descripto en la parte principal del documento)    
+   * m.3.y: año como variable continua       
+   
+   
+```{r compare.m.3.yearc, echo=FALSE, message=FALSE, warning=FALSE}
+draw(gratia::compare_smooths(m.3,m.3.y)) 
+```
+
+### Comparacion de ajustes      
+
+Aquí comparo los ajustes de los modelos con diferente estructura de efectos aleatorios -- analizar con precaución. Tres modelos   
+
+Los 3 modelos tienen ajuste similar (LL y dev), pero dados la cantidad de parámetros que se necesitan para alcanzar el ajuste (df), el modelo mas parsimonioso es el modelo que excluye año, seguido muy de cerca del modelo con año como variable aleatoria (deltaAIC y er).     
+Dados estos resultados y el razonamiento ecológico presentado más arriba, creo que el modelo con año como variable aleatoria es el modelo más adecuado.    
+
+
+
+```{r comparemodelyear, echo=FALSE, message=FALSE, warning=FALSE}
+ms.year <- AIC( m.3.y,  m.3, m.3.ny) %>%
+  data.table(keep.rownames = TRUE) %>%
+  mutate(LL = c(
+    logLik(m.3.y),  logLik(m.3),  logLik(m.3.ny)
+  )) %>%
+  mutate(dev = c(
+    deviance(m.3.y),  deviance(m.3),  deviance(m.3.ny)
+  )) %>%
+  mutate(deltaAIC = AIC - min(AIC))
+# Round numeric columns to 2 decimal places
+ms.year$wi <- exp(-0.5 * ms.year$deltaAIC) / sum(exp(-0.5 * ms.year$deltaAIC))
+ms.year$er <- max(ms.year$wi) / ms.year$wi
+ms.year$rsq <- c(
+    summary(m.3.y)$r.sq,
+  summary(m.3)$r.sq,
+  summary(m.3.ny)$r.sq
+  
+)
+ms.year <- ms.year[, lapply(.SD, function(x) if (is.numeric(x)) round(x, 2) else x)]
+ms.year$model <- c(
+  "Ano como variable continua",
+  "Ano como variable aleatoria",
+  "Excluir ano del modelo"
+)
+
+ms.year <- ms.year[order(AIC), .(model, df, LL, dev, rsq, deltaAIC, er)]
+
+kable(ms.year) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover"),
+    position = "center",
+    row_label_position = "left",
+    full_width = FALSE
+  )
+
+```
+
+
       
-<!-- ## Incluir Lance ID       -->
+## Incluir Lance ID
 
-<!-- Inclui el efecto de lance como variable aleatoria al mejor modelo.    -->
-
-<!-- `m.3.lance <- gam( -->
-<!--   riqueza ~ -->
-<!--     s(Depth) + -->
-<!--     s(tiempo_arrastre2) + -->
-<!--     s(long) + -->
-<!--     s(lance, k = length(levels(mod.dat$lance)), bs = "re") + -->
-<!--     s(Year_fac, k = length(levels(mod.dat$Year_fac)), bs = "re") + -->
-<!--     ti(tiempo_arrastre2, long), -->
-<!--   method = "ML", -->
-<!--   data = mod.dat -->
-<!-- )` -->
-
-<!-- Elegi presentarlo de esta manera para evitar tener que repetir el ejercicio de seleccion de modelos. Pero inclui el efecto  a todos los modelos presentados, y los resultados son consistentes independientemente del modelo.   -->
+```{r runlances, echo=FALSE, message=FALSE, warning=FALSE}
+source(paste0(here::here(), "/analysis/1_Modelado_Lance.R"))
+```
 
 
+### Model selection     
 
-<!-- El efecto de lance no es significativo (pvalue: `r round(data.table(parameters::parameters(m.3.lance))[grepl(x = Parameter, pattern = "lance"), (p)], 4) `)     -->
+El mejor modelo es consistentemente el que incluye la interaccion entre longitud y tiempo de arrastre.   
 
-<!-- ```{r summary.m.3.lance, echo=FALSE, message=FALSE, warning=FALSE} -->
-<!-- summary(m.3.lance) -->
-<!-- ``` -->
+```{r modelselection.lance, echo=FALSE, message=FALSE, warning=FALSE}
+kable(ms.lance) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover"),
+    position = "center",
+    row_label_position = "left",
+    full_width = FALSE
+  )
+```
+
+### Efectos parciales de variables explicativas         
+
+```{r partialeffects.lance, echo=FALSE, message=FALSE, warning=FALSE}
+draw(m.3.lance, residuals = TRUE) +
+  theme_minimal() +
+  scale_fill_viridis_c()
+```
+
+### Comparacion de funciones smooth     
+
+Las funciones smooth son idénticas     
+
+```{r compare.m.3.lance, echo=FALSE, message=FALSE, warning=FALSE}
+draw(gratia::compare_smooths(m.3, m.3.lance)) 
+```
+
+### Comparacion de ajustes      
+
+El ajuste del modelo incluyendo Lance ID es mejor (LL y dev), pero la cantidad de parámetros necesarios para incluir este efecto es tan grande que el modelo más parsimonioso resulta ser el modelo con el que veníamos trabajando.    
+
+Esto quizás formula la pregunta de si será mejor incuir el efcto de latitud como una variable smooth.   
 
 
-<!-- Incluir el efecto de Lance ID no mejora el ajuste del modelo  -->
 
-<!-- logLik m.3: `r round(logLik(m.3), 1)`     -->
-<!-- logLik m.3.lance: `r round(logLik(m.3.lance), 1)`      -->
+```{r comparemodellance, echo=FALSE, message=FALSE, warning=FALSE}
+ms.lan <- AIC(  m.3, m.3.lance) %>%
+  data.table(keep.rownames = TRUE) %>%
+  mutate(LL = c(
+    logLik(m.3),  logLik(m.3.lance)
+  )) %>%
+  mutate(dev = c(
+     deviance(m.3),  deviance(m.3.lance)
+  )) %>%
+  mutate(deltaAIC = AIC - min(AIC))
+# Round numeric columns to 2 decimal places
+ms.lan$wi <- exp(-0.5 * ms.lan$deltaAIC) / sum(exp(-0.5 * ms.lan$deltaAIC))
+ms.lan$er <- max(ms.lan$wi) / ms.lan$wi
+ms.lan$rsq <- c(
+    summary(m.3)$r.sq,
+  summary(m.3.lance)$r.sq
+  
+)
+ms.lan <- ms.lan[, lapply(.SD, function(x) if (is.numeric(x)) round(x, 2) else x)]
+ms.lan$model <- c(
+  
+  "Ano como variable aleatoria",
+  "Incluir Lance ID"
+)
+
+ms.lan <- ms.lan[order(AIC), .(model, df, LL, dev, rsq, deltaAIC, er)]
+
+kable(ms.lan) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover"),
+    position = "center",
+    row_label_position = "left",
+    full_width = FALSE
+  )
+
+```
 
 
-<!-- Esto lo interpreto como eviencia de que el efecto de la locacion sobre la riqueza queda completamente descripta por los efectos de profundidad y longitud.     -->
-<!-- Por lo tanto, no lo incluire en el modelo final.     -->
+### Incluir latitud     
+
+
+```{r runlat, echo=FALSE, message=FALSE, warning=FALSE}
+source(paste0(here::here(), "/analysis/1_Modelado_latitud.r"))
+```
+
+
+#### Resumen del modelo     
+
+El efecto de latitud no es significativo (pvalue = 0.84)   
+
+```{r sum.lat, echo=FALSE, message=FALSE, warning=FALSE}
+summary(m.3.latitud)
+```
+
+
+
+#### Efectos parciales de variables explicativas   
+El efecto de latitud es lineal, ligeramente negativa, pero es casi nulo; los intervalos de confianza solapan cero en todas las latitudes.     
+
+```{r partialeffects.lat, echo=FALSE, message=FALSE, warning=FALSE}
+draw(m.3.latitud, residuals = TRUE) +
+  theme_minimal() +
+  scale_fill_viridis_c()
+```
+
+Concluyo que si bien incluir Lance ID como variable aleatoria sería justificable desde el razonamiento ecológico, es mas parsimonioso no incluirlo.   
+Incluir latitud en lugar de Lance ID no mejora el ajuste del modelo.   
+
 
 # Referencias

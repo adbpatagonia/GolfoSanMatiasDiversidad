@@ -177,9 +177,9 @@ ggplot(edf_data, aes(x = reorder(.smooth, .edf), y = .edf)) +
 
 
 
-vis.gam(m.3, view = c("Depth", "long"))
-vis.gam(m.3, view = c("tiempo_arrastre2", "Depth"))
-vis.gam(m.3, view = c("tiempo_arrastre2", "long"))
+#vis.gam(m.3, view = c("Depth", "long"))
+#vis.gam(m.3, view = c("tiempo_arrastre2", "Depth"))
+#vis.gam(m.3, view = c("tiempo_arrastre2", "long"))
 
 
 # partition of deviance ----
