@@ -222,14 +222,19 @@ summary(mod)
 #' not working at the moment, I believe it is becasue tiempo arrastre
 #' and Year contain the same info
 #' When adding the 2024 data, this problem may go away
-# m.3.y <- gam(
-#   riqueza ~
-#     s(Depth) +
-#     s(tiempo_arrastre2) +
-#     s(long) +
-#     s(Year) +
-#     # s(lance, k = length(levels(mod.dat$lance)), bs = "re") +
-#     ti(tiempo_arrastre2, long),
-#     method = "ML",
-#   data = mod.dat
-# )
+m.3.y <- gam(
+  riqueza ~
+    s(Depth, bs = "tp") +
+    s(tiempo_arrastre2, bs = "tp") +
+    s(long, bs = "tp") +
+    s(Year, bs = "cr", k = 6) +
+    # s(lance, k = length(levels(mod.dat$lance)), bs = "re") +
+    ti(tiempo_arrastre2, long),
+    method = "ML",
+  data = mod.dat
+)
+
+draw(m.3.y) +
+  theme_minimal() +
+  scale_fill_viridis_c() +
+  labs(title = "Partial Effects in m.3.year.continuous")

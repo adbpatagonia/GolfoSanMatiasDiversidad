@@ -25,6 +25,9 @@ library(tidyterra)
 library(terra)
 library(rnaturalearth)
 library(gratia)
+library(geometry)
+library(plotly)
+library(RColorBrewer)
 
 ggplot2::theme_set(theme_bw())
 

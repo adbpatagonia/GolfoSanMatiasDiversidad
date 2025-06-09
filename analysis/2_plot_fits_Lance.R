@@ -10,7 +10,7 @@
 # longitude in the x-axis and time as different planes OR
 
 # source modelling -----
-source(paste0(here::here(), "/analysis/1_Modelado.R"))
+source(paste0(here::here(), "/analysis/1_Modelado_Lance.R"))
 # libraries -----
 library(geometry)
 library(plotly)
@@ -24,12 +24,13 @@ new.dat <- expand.grid(
   # long = mean(mod.dat$long),
   long = c(-64, -64.4, -64.8),
   Year_fac = unique(mod.dat$Year_fac),
+  lance = unique(mod.dat$lance),
   Depth = seq(32, 176, 2)
 )
-preds <- predict(m.3,
+preds <- predict(m.3.lance,
   newdata = new.dat,
   se.fit = FALSE,
-  exclude = "s(Year_fac)",
+  exclude = c("s(Year_fac)", "s(lance)"),
   type = "response"
 ) %>%
   data.frame() %>%
@@ -130,7 +131,7 @@ p <- layout(
   )
 )
 
-p.fit.4d.long <- p
+p.fit.4d.long.lance <- p
 
 # 4th var: tiempo de arrastre ----
 # Split the data by group
@@ -221,44 +222,44 @@ p <- layout(
   )
 )
 
-p.fit.4d.time <- p
+p.fit.4d.time.lance <- p
 
 # 4th var: Depth ----
-new.dat <- expand.grid(
-  tiempo_arrastre2 = seq(min(mod.dat$tiempo_arrastre2), max(mod.dat$tiempo_arrastre2), length.out = 15),
-  long = seq(min(mod.dat$long), max(mod.dat$long), length.out = 15),
-  Year_fac = unique(mod.dat$Year_fac),
-  Depth = c(60, 80, 170)
-)
-preds <- predict(m.3,
-                 newdata = new.dat,
-                 se.fit = FALSE,
-                 exclude = "s(Year_fac)",
-                 type = "response"
-) %>%
-  data.frame() %>%
-  rename(fit = ".") %>%
-  bind_cols(new.dat)
+# new.dat <- expand.grid(
+#   tiempo_arrastre2 = seq(min(mod.dat$tiempo_arrastre2), max(mod.dat$tiempo_arrastre2), length.out = 15),
+#   long = seq(min(mod.dat$long), max(mod.dat$long), length.out = 15),
+#   Year_fac = unique(mod.dat$Year_fac),
+#   Depth = c(60, 80, 170)
+# )
+# preds <- predict(m.3,
+#                  newdata = new.dat,
+#                  se.fit = FALSE,
+#                  exclude = "s(Year_fac)",
+#                  type = "response"
+# ) %>%
+#   data.frame() %>%
+#   rename(fit = ".") %>%
+#   bind_cols(new.dat)
 
 # Plot
-ggplot() +
-  geom_tile(data = preds,
-            aes(x = tiempo_arrastre2, y = long, fill = fit)) +
-  geom_point(data = mod.dat,
-             aes(x = tiempo_arrastre2, y = long), color = "black", alpha = 0.6) +
-  scale_fill_viridis_c() +
-  theme_minimal()
+# ggplot() +
+#   geom_tile(data = preds,
+#             aes(x = tiempo_arrastre2, y = long, fill = fit)) +
+#   geom_point(data = mod.dat,
+#              aes(x = tiempo_arrastre2, y = long), color = "black", alpha = 0.6) +
+#   scale_fill_viridis_c() +
+#   theme_minimal()
 
 
-Year_obs <- mod.dat$Year
-Depth_obs <- mod.dat$Depth
-time_obs <- mod.dat$tiempo_arrastre2
-long_obs <- mod.dat$long
-sprich <- mod.dat$riqueza
+# Year_obs <- mod.dat$Year
+# Depth_obs <- mod.dat$Depth
+# time_obs <- mod.dat$tiempo_arrastre2
+# long_obs <- mod.dat$long
+# sprich <- mod.dat$riqueza
 
 
 # # Split the data by group
-groups <- unique(preds$Depth)
+groups <- c(60, 80, 170)
 
 # Add mesh trace (with legend turned off)
 p <- plot_ly()
@@ -341,26 +342,5 @@ p <- layout(
     zaxis = list(title = "Species Richness")
   ))
 
-p.fit.4d.depth <- p
+p.fit.4d.depth.lance <- p
 
-# extra stuff ----
-# https://github.com/wilkelab/ungeviz
-library("ungeviz")
-nd <- expand.grid(
-  tiempo_arrastre2 = 30,
-  long = -64.4,
-  Year_fac = 2009,
-  Depth = seq(32, 176, 2)
-)
-sample_df <- sample_outcomes(m.3, newdata = nd, 30, unconditional = TRUE)
-conf <- confidence_band(m.3, newdata = nd, unconditional = TRUE)
-
-ggplot(mod.dat, aes(Depth, riqueza)) +
-  # facet_grid(. ~ long) +
-  # geom_ribbon(data = conf, aes(ymin = lo, ymax = hi), fill = "#80808040", color = NA) +
-  geom_point(
-    alpha = 0.4
-  ) +
-  geom_line(data = sample_df, aes(group = .draw), color = "#0072B2", size = 0.3) +
-  geom_line(data = conf, size = 1, color = "darkred") +
-  theme_bw()
