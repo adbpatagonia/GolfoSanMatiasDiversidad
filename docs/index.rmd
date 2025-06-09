@@ -47,9 +47,10 @@ A mediados de mayo 2025, mantuvimos una reunion Josefina, Alejandra, Guillermo, 
 Luego de la reunion con el grupo de trabajo se decidio hacer estas actualizaciones:     
 
 
-   1. Incluir datos de 2024. Estos tienen tiempos de arrastre entre 15 y 25 minutos. Estos datos pueden ayudar a separar el efecto de año del efecto de tiempo de arrastre    
-   2 . cambiar la estructura del efecto de año. En este momento la estamos usando como una variable aleatorio (random intercept). La cambiaremos a una variable fija (continua, smooth effect).     
-      
+   1. Incluir datos de 2024. Estos tienen tiempos de arrastre entre 15 y 25 minutos. Estos datos pueden ayudar a separar el efecto de año del efecto de tiempo de arrastre  
+   
+   2 . cambiar la estructura del efecto de año. En este momento la estamos usando como una variable aleatorio (random intercept). La cambiaremos a una variable fija (continua, smooth effect).  
+   
    3. Incluir el efecto de la variable "lance": este es un identificador del lance. Es un identificador del lugar donde se realizo el lance. Lo incluiremos para tener en cuenta la correlacion espcaial (efecto aleatorio).       
 
    
