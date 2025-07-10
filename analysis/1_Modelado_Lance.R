@@ -11,7 +11,7 @@ m.1.lance <- gam(
     s(lance, k = length(levels(mod.dat$lance)), bs = "re") +
     s(Year, bs = "cr", k = 6) ,
   # ti(tiempo_arrastre2, long),
-  method = "ML",
+  method = "REML",
   data = mod.dat
 )
 
@@ -32,7 +32,7 @@ m.2.lance <- gam(
     s(Year, bs = "cr", k = 6)  +
     s(lance, k = length(levels(mod.dat$lance)), bs = "re") +
     ti(Depth, long, tiempo_arrastre2),
-  method = "ML",
+  method = "REML",
   data = mod.dat
 )
 
@@ -56,7 +56,7 @@ m.3.lance <- gam(
     s(lance, k = length(levels(mod.dat$lance)), bs = "re") +
     s(Year, bs = "cr", k = 6)  +
     ti(tiempo_arrastre2, long),
-  method = "ML",
+  method = "REML",
   data = mod.dat
 )
 
@@ -81,7 +81,7 @@ m.4.lance <- gam(
     s(lance, k = length(levels(mod.dat$lance)), bs = "re") +
     s(Year, bs = "cr", k = 6)  +
     ti(tiempo_arrastre2, Depth),
-  method = "ML",
+  method = "REML",
   data = mod.dat
 )
 
