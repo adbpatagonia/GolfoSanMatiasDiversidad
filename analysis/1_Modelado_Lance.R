@@ -1,4 +1,4 @@
-source(paste0(here::here(), "/analysis/1_Modelado.R"))
+ source(paste0(here::here(), "/analysis/1_Modelado.R"))
 
 ## fit full model -----
 # include lance as a random effect
@@ -9,7 +9,7 @@ m.1.lance <- gam(
     s(tiempo_arrastre2) +
     s(long) +
     s(lance, k = length(levels(mod.dat$lance)), bs = "re") +
-    s(Year_fac, k = length(levels(mod.dat$Year_fac)), bs = "re") ,
+    s(Year, bs = "cr", k = 6) ,
   # ti(tiempo_arrastre2, long),
   method = "ML",
   data = mod.dat
@@ -29,7 +29,7 @@ m.2.lance <- gam(
     s(Depth, bs = "tp") +
     s(long, bs = "tp") +
     s(tiempo_arrastre2, bs = "tp") +
-    s(Year_fac, k = length(levels(mod.dat$Year_fac)), bs = "re") +
+    s(Year, bs = "cr", k = 6)  +
     s(lance, k = length(levels(mod.dat$lance)), bs = "re") +
     ti(Depth, long, tiempo_arrastre2),
   method = "ML",
@@ -54,7 +54,7 @@ m.3.lance <- gam(
     s(tiempo_arrastre2) +
     s(long) +
     s(lance, k = length(levels(mod.dat$lance)), bs = "re") +
-    s(Year_fac, k = length(levels(mod.dat$Year_fac)), bs = "re") +
+    s(Year, bs = "cr", k = 6)  +
     ti(tiempo_arrastre2, long),
   method = "ML",
   data = mod.dat
@@ -79,7 +79,7 @@ m.4.lance <- gam(
     s(tiempo_arrastre2) +
     s(long) +
     s(lance, k = length(levels(mod.dat$lance)), bs = "re") +
-    s(Year_fac, k = length(levels(mod.dat$Year_fac)), bs = "re") +
+    s(Year, bs = "cr", k = 6)  +
     ti(tiempo_arrastre2, Depth),
   method = "ML",
   data = mod.dat
@@ -132,3 +132,9 @@ ms.lance$model <- c(
 ms.lance <- ms.lance[order(AIC), .(model, df, LL, dev, rsq, deltaAIC, er)]
 
 
+
+kable(ms.lance) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover"),
+    position = "center", full_width = FALSE
+  )
