@@ -1,4 +1,4 @@
-source(paste0(here::here(), "/analysis/1_Modelado.R"))
+# source(paste0(here::here(), "/analysis/1_Modelado.R"))
 
 ## fit full model -----
 # include Year as a random effect
@@ -11,7 +11,7 @@ m.1.y <- gam(
     s(tiempo_arrastre2, bs = "tp") ,
   # s(Year_fac, k = length(levels(mod.dat$Year_fac)), bs = "re") ,
   # s(lance, k = length(levels(mod.dat$lance)), bs = "re"),
-  method = "ML",
+  method = "REML",
   data = mod.dat
 )
 
@@ -32,7 +32,7 @@ m.1.ny <- gam(
     s(tiempo_arrastre2, bs = "tp") ,
   # s(Year_fac, k = length(levels(mod.dat$Year_fac)), bs = "re") ,
   # s(lance, k = length(levels(mod.dat$lance)), bs = "re"),
-  method = "ML",
+  method = "REML",
   data = mod.dat
 )
 
@@ -54,7 +54,7 @@ m.2.y <- gam(
     # s(Year_fac, k = length(levels(mod.dat$Year_fac)), bs = "re") +
     # s(lance, k = length(levels(mod.dat$lance)), bs = "re") +
     ti(Depth, long, tiempo_arrastre2),
-  method = "ML",
+  method = "REML",
   data = mod.dat
 )
 
@@ -79,7 +79,7 @@ m.2.ny <- gam(
     # s(Year_fac, k = length(levels(mod.dat$Year_fac)), bs = "re") +
     # s(lance, k = length(levels(mod.dat$lance)), bs = "re") +
     ti(Depth, long, tiempo_arrastre2),
-  method = "ML",
+  method = "REML",
   data = mod.dat
 )
 
@@ -131,7 +131,7 @@ m.3.ny <- gam(
     # s(lance, k = length(levels(mod.dat$lance)), bs = "re") +
     # s(Year_fac, k = length(levels(mod.dat$Year_fac)), bs = "re") +
     ti(tiempo_arrastre2, long),
-  method = "ML",
+  method = "REML",
   data = mod.dat
 )
 
@@ -157,7 +157,7 @@ m.4.y <- gam(
     # s(lance, k = length(levels(mod.dat$lance)), bs = "re") +
     # s(Year_fac, k = length(levels(mod.dat$Year_fac)), bs = "re") +
     ti(tiempo_arrastre2, Depth),
-  method = "ML",
+  method = "REML",
   data = mod.dat
 )
 
@@ -183,7 +183,7 @@ m.4.ny <- gam(
     # s(lance, k = length(levels(mod.dat$lance)), bs = "re") +
     # s(Year_fac, k = length(levels(mod.dat$Year_fac)), bs = "re") +
     ti(tiempo_arrastre2, Depth),
-  method = "ML",
+  method = "REML",
   data = mod.dat
 )
 
