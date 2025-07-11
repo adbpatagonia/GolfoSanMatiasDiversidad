@@ -16,21 +16,20 @@ library(geometry)
 library(plotly)
 library(RColorBrewer)
 
-
 # prepare data ----
 new.dat <- expand.grid(
   tiempo_arrastre2 = seq(15, 45, 1),
   # long = seq(min(mod.dat$long), max(mod.dat$long), length.out = 15),
   # long = mean(mod.dat$long),
   long = c(-64, -64.4, -64.8),
-  Year_fac = unique(mod.dat$Year_fac),
+  Year = unique(mod.dat$Year),
   lance = unique(mod.dat$lance),
   Depth = seq(32, 176, 2)
 )
 preds <- predict(m.3.lance,
   newdata = new.dat,
   se.fit = FALSE,
-  exclude = c("s(Year_fac)", "s(lance)"),
+  exclude = c( "s(lance)", "s(Year)"),
   type = "response"
 ) %>%
   data.frame() %>%
@@ -317,6 +316,7 @@ p <- add_trace(
   type = "scatter3d",
   mode = "markers",
   marker = list(
+    # color = "gray80",
     color = ~Depth_obs,
     colorscale = "Viridis",
     colorbar = list(
@@ -337,10 +337,110 @@ p <- layout(
   p,
   title = "",
   scene = list(
-    xaxis = list(title = "Tiempo de arrastre"),
+    xaxis = list(title = "Trawling time"),
     yaxis = list(title = "Longitude"),
     zaxis = list(title = "Species Richness")
   ))
 
 p.fit.4d.depth.lance <- p
 
+
+# 4th var: Depth -- Publication ready----
+groups <- c(60, 80, 170)
+
+# Add mesh trace (with legend turned off)
+p <- plot_ly()
+for (g in groups) {
+  data_g <- subset(preds, Depth == g)
+
+  triangles <- delaunayn(data_g[, c("long", "tiempo_arrastre2")])
+  i <- triangles[, 1] - 1
+  j <- triangles[, 2] - 1
+  k <- triangles[, 3] - 1
+
+  hover_text <- paste0(
+    "Tiempo: ", g, "<br>",
+    "Longitude: ", data_g$long, "<br>",
+    "Depth: ", data_g$Depth, "<br>",
+    "Species Richness: ", round(data_g$fit, 2)
+  )
+
+  p <- add_trace(
+    p,
+    type = "mesh3d",
+    x = data_g$tiempo_arrastre2,
+    y = data_g$long,
+    z = data_g$fit,
+    i = i, j = j, k = k,
+    intensity = data_g$fit, # <-- CHANGED: use per-group intensity
+    text = hover_text,
+    hoverinfo = "text",
+    opacity = 0.8,
+    colorscale = "Greys", # <-- CHANGED: use grayscale
+    flatshading = TRUE,
+    showscale = FALSE,
+    showlegend = FALSE
+  )
+}
+
+# Add the shared marker trace with legend
+ht <- paste0(
+  "Longitude_obs: ", mod.dat$long, "<br>",
+  "Tiempo_obs: ", mod.dat$tiempo_arrastre2, "<br>",
+  "Depth_obs: ", mod.dat$Depth, "<br>",
+  "Species Richness_obs: ", round(mod.dat$riqueza, 2)
+)
+p <- add_trace(
+  p,
+  data = mod.dat,
+  x = ~tiempo_arrastre2,
+  y = ~long,
+  z = ~riqueza,
+  type = "scatter3d",
+  mode = "markers",
+  marker = list(
+    size = 3,
+    color = "black",    # <-- CHANGED: black markers
+    opacity = 0.7,      # <-- (optional) slightly stronger
+    symbol = "circle"   # <-- (optional) for clarity
+  ),
+  name = "Observations", # Legend label
+  text = ht,
+  hoverinfo = "text",
+  showlegend = TRUE
+)
+
+# Final layout
+p <- layout(
+  p,
+  title = "",
+  scene = list(
+    xaxis = list(title = "Trawling time"),
+    yaxis = list(title = "Longitude"),
+    zaxis = list(title = "Species Richness")
+  )
+)
+
+p.fit.4d.depth.lance.pub <- p
+
+
+# output -----
+
+# Retrieve the Camera State
+# 1. open p.fit.4d.depth.lance.pub in browser
+# 2. open developer tools (F12)
+# 3. in the console, paste the command
+# Plotly.d3.selectAll('.js-plotly-plot').data()[0].layout.scene.camera
+# in the code below paste the values
+
+# Assume 'p' is your plot
+camera <- list(
+  eye = list(x = -0.9512572708756611, y = 1.9383097713076916, z = 0.1598900717972026),
+  up = list(x = 0, y = 0, z = 1),
+  center = list(x = 0, y = 0, z = 5.551115123125783e-16)
+)
+
+p <- layout(p.fit.4d.depth.lance.pub, scene = list(camera = camera))
+
+# Now save as a static image (here using orca)
+save_image(p, "output/ModelFit_MostParsimonious.png", scale = 3, width = 1300, height = 1300)
