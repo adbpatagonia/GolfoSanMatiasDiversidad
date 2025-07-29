@@ -1,4 +1,4 @@
-# source(paste0(here::here(), "/analysis/1_Modelado.R"))
+ # source(paste0(here::here(), "/analysis/1_Modelado.R"))
 
 ## fit full model -----
 # include Year as a random effect
@@ -381,3 +381,6 @@ p <- layout(
     zaxis = list(title = "Species Richness")
   ))
 
+p.var.part <- plot.gamhp(gam.hp(m.3.y), plot.perc = TRUE)
+
+p.var.part$data %>% arrange(desc(value))
